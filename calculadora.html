@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <title>Calculadora</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <img id="logo" src="sensor.log.png">
+    <fieldset class="fieldset">
+      <legend class="titulo">Converte milímetros para percentual</legend>
+      <form id="mm2percent">
+        <legend>Distância (mm)</legend>
+        <label for="mmMillimeter"> </label>
+        <input class="inserir" id="mmMillimeter" type="number" value="350" onchange="calculePercent()" />
+
+        <legend>Offset (mm)</legend>
+        <label for="mmOffset"> </label>
+        <input class="inserir" id="mmOffset" type="number" value="300" onchange="calculePercent()" />
+
+        <legend>Bottom (mm)</legend>
+        <label for="mmBottom"> </label>
+        <input class="inserir" id="mmBottom" type="number" value="1300" onchange="calculePercent()" />
+
+        <legend>Valor (%)</legend>
+        <label for="mmPercent"> </label>
+        <input class="inserir" id="mmPercent" value="95" readonly />
+      </form>
+    </fieldset>
+
+    <fieldset class="fieldset">
+      <legend class="titulo">Converte percentual para milímetros</legend>
+      <form id="percent2mm">
+        <legend>Valor (%)</legend>
+        <label for="pPercent"> </label>
+        <input class="inserir" id="pPercent" type="number" value="95" onchange="calculeMillimeter()" />
+
+        <legend>Offset (mm)</legend>
+        <label for="pOffset"> </label>
+        <input class="inserir" id="pOffset" type="number" value="300" onchange="calculeMillimeter()" />
+
+        <legend>Bottom (mm)</legend>
+        <label for="pBottom"> </label>
+        <input class="inserir" id="pBottom" type="number" value="1300" onchange="calculeMillimeter()" />
+
+        <legend>Distância (mm)</legend>
+        <label for="pMillimeter"> </label>
+        <input class="inserir" id="pMillimeter" value="350" readonly />
+      </form>
+    </fieldset>
+
+    <script>
+      const mm_htmlMillimeter = document.getElementById("mmMillimeter");
+      const mm_htmlOffset = document.getElementById("mmOffset");
+      const mm_htmlBottom = document.getElementById("mmBottom");
+      const mm_htmlPercent = document.getElementById("mmPercent");
+
+      const p_htmlMillimeter = document.getElementById("pMillimeter");
+      const p_htmlOffset = document.getElementById("pOffset");
+      const p_htmlBottom = document.getElementById("pBottom");
+      const p_htmlPercent = document.getElementById("pPercent");
+
+      function calculePercent(val) {
+        try {
+          let mm = Number(mm_htmlMillimeter.value);
+          let offset = Number(mm_htmlOffset.value);
+          let bottom = Number(mm_htmlBottom.value);
+          let percent = (1 - (mm - offset) / (bottom - offset)) * 100;
+          mm_htmlPercent.value = percent.toFixed(1);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function calculeMillimeter(val) {
+        try {
+          let percent = Number(p_htmlPercent.value);
+          let offset = Number(p_htmlOffset.value);
+          let bottom = Number(p_htmlBottom.value);
+          let mm = (1 - percent / 100) * (bottom - offset) + offset;
+          p_htmlMillimeter.value = mm.toFixed(0);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Noto+Sans:wght@400&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat&family=Noto+Sans:wght@800&family=Poppins&display=swap');
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    padding: 1em;
+    padding-top: 1.5em;
+    font-family: 'Noto Sans', sans-serif;
+    background-color: rgb(249, 250, 255);
+    color: rgb(1, 5, 11);
+    font-size: 16px;
+}
+
+#logo {
+    width: 35%;
+    margin: auto;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.fieldset {
+    border-radius: 10px;
+}
+
+.titulo {
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 800;
+    font-style: bold;
+    text-align: center;
+    padding: 7px;
+}
+
+#ssidSelect, #Telegram, #mm2percent, #percent2mm {
+    padding: 0 10px 10px 10px;
+}
+
+.botao {
+    padding: 5px;
+    border: 1px solid rgb(39, 39, 42);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.inserir {
+    padding: 5px;   
+    border-radius: 10px;
+    font-size: 16px;
+    border: 1px solid rgb(39, 39, 42);
+    margin-bottom: 0.5em;
+}
+
+.fim {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.fim__botao {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgb(39, 39, 42);
+    font-size: 15px;
+}
+
+input[type=radio] {
+    margin-right: 4px;
+}
+
+@media (min-width: 800px) {
+    #logo {
+        width: 23%;
+    }
+}
