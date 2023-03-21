@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Caveat&family=Noto+Sans:wght@400&family=Poppins&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Caveat&family=Noto+Sans:wght@800&family=Poppins&display=swap');
 
-
 * {
     margin: 0;
     padding: 0;
@@ -48,7 +47,7 @@ body {
     font-size: 14px;
 }
 
-.inserir {
+.inserir, #pDataFinal, #pDataInicial {
     padding: 5px;   
     border-radius: 10px;
     font-size: 16px;
@@ -70,6 +69,23 @@ body {
 
 input[type=radio] {
     margin-right: 4px;
+}
+
+.titulo__filtro {
+    text-align: left;
+    font-family: 'Noto Sans', sans-serif;
+    font-weight: 800;
+    font-style: bold;
+    padding: 7px;
+}
+
+.inicio__e__fim {
+    margin-left: 7px;
+    margin-bottom: 3px;
+}
+
+#pDateFilter {
+    margin-left: 5px;
 }
 
 @media (min-width: 800px) {
