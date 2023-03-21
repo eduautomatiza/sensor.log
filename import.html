@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
@@ -5,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>sensor.log</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" href="/style.css">
   </head>
 
   <body>
@@ -550,22 +552,12 @@
       }
     </script>
     <style>
-      body {
-        margin: 0 auto;
-        padding: 0 20px;
-        max-width: 800px;
-      }
       .container {
-        border: 2px solid #dedede;
-        background-color: #f0f0f0;
+        border: 1px solid;
         border-radius: 10px;
         padding: 10px;
         margin: 10px 0;
       }
-      /* .darker {
-        border-color: #ccc;
-        background-color: #ddd;
-      } */
       .container::after {
         content: "";
         clear: both;
@@ -595,13 +587,15 @@
         color: #999;
       }
       .author-left {
+        font-weight: bold;
         float: left;
-        color: #09c3f2;
+        color: #07C3F2;
       }
     </style>
+    <img src="logoatual.png" id="logo">
     <p class="container">
       <label for="pFileInput">Carregue um arquivo:</label>
-      <input
+      <input class="carregarArquivo"
         type="file"
         id="pFileInput"
         accept=".json"
@@ -609,16 +603,16 @@
       />
     </p>
     <div class="container">
-      <h3>Filtro</h3>
-      <p>
+      <h3 class="titulo__filtro">Filtro</h3>
+      <p class="inicio__e__fim"> 
         <label for="pDataInicial">Inicio:</label>
         <input id="pDataInicial" type="datetime-local" />
       </p>
-      <p>
+      <p class="inicio__e__fim">
         <label for="pDataFinal">Fim:</label>
         <input id="pDataFinal" type="datetime-local" />
       </p>
-      <input
+      <input class="botao"
         id="pDateFilter"
         type="button"
         value="Filtrar"
