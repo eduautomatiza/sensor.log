@@ -1,13 +1,704 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sensor.log</title>
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensor.log</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
 
-  <body>
-  
-  </body>
-</html> 
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+    integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS"
+    crossorigin="anonymous"></script>
+  <script>
+    const mm_htmlMillimeter = document.getElementById("mmMillimeter");
+    const mm_htmlOffset = document.getElementById("mmOffset");
+    const mm_htmlBottom = document.getElementById("mmBottom");
+    const mm_htmlPercent = document.getElementById("mmPercent");
+
+    const p_htmlMillimeter = document.getElementById("pMillimeter");
+    const p_htmlOffset = document.getElementById("pOffset");
+    const p_htmlBottom = document.getElementById("pBottom");
+    const p_htmlPercent = document.getElementById("pPercent");
+
+    function calculePercent(val) {
+      try {
+        let mm = Number(mm_htmlMillimeter.value);
+        let offset = Number(mm_htmlOffset.value);
+        let bottom = Number(mm_htmlBottom.value);
+        let percent = (1 - (mm - offset) / (bottom - offset)) * 100;
+        mm_htmlPercent.value = percent.toFixed(1);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    function calculeMillimeter(val) {
+      try {
+        let percent = Number(p_htmlPercent.value);
+        let offset = Number(p_htmlOffset.value);
+        let bottom = Number(p_htmlBottom.value);
+        let mm = (1 - percent / 100) * (bottom - offset) + offset;
+        p_htmlMillimeter.value = mm.toFixed(0);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"
+    integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"
+    integrity="sha256-eVNjHw5UeU0jUqPPpZHAkU1z4U+QFBBY488WvueTm88=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@1.2.1/dist/chartjs-plugin-zoom.min.js"
+    integrity="sha256-cRtVj62HOT1M3EGc+4EBacU/38hYsYrNBB48zEVn8uU=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.0.4/build/global/luxon.min.js"
+    integrity="sha256-APLcdSn5AMXqZzoKhlczWWyV93oXBTrfkjhqtMX8vEM=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.2.0/dist/chartjs-adapter-luxon.min.js"
+    integrity="sha256-Mr694q2aTwUcDLulItPTrQjIMjDiW+LexQCdFT/iubY=" crossorigin="anonymous"></script>
+  <script>
+    var g_sensor_data = [];
+    var g_chart_list = [];
+
+    var g_max_date = undefined;
+    var g_min_date = undefined;
+
+    const g_default_sensor = [
+      {
+        parse: { key: "Nível:" },
+        chart: {
+          hidden: false,
+          label: "Nível(%)",
+          borderColor: "#37C",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₀₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₀₎(mm)",
+          borderColor: "#037",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₋₁₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₋₁₎(mm)",
+          borderColor: "#7CF",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₋₂₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₋₂₎(mm)",
+          borderColor: "#F73",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Δd/Δt₍₋₁₎:" },
+        chart: {
+          hidden: true,
+          label: "Δd/Δt₍₋₁₎(mm/h)",
+          borderColor: "#C73",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Δd/Δt₍₋₂₎:" },
+        chart: {
+          hidden: true,
+          label: "Δd/Δt₍₋₂₎(mm/h)",
+          borderColor: "#FC7",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "T0:" },
+        chart: {
+          hidden: true,
+          label: "T0(°C)",
+          borderColor: "#37F",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "T1:" },
+        chart: {
+          hidden: true,
+          label: "T1(°C)",
+          borderColor: "#777",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "V0:" },
+        chart: {
+          hidden: true,
+          label: "V0(mV)",
+          borderColor: "#F00",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "V1:" },
+        chart: {
+          hidden: true,
+          label: "V1(mV)",
+          borderColor: "#700",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "SNR:" },
+        chart: {
+          hidden: true,
+          label: "SNR(dB)",
+          borderColor: "#0F0",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "RSSI:" },
+        chart: {
+          hidden: true,
+          label: "RSSI(dB)",
+          borderColor: "#070",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "SNR(gw):" },
+        chart: {
+          hidden: true,
+          label: "SNR(gw)(dB)",
+          borderColor: "#0FF",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "RSSI(gw):" },
+        chart: {
+          hidden: true,
+          label: "RSSI(gw)(dB)",
+          borderColor: "#F0F",
+          type: "line",
+        },
+      },
+    ];
+
+    function pushValue(bot_name, sensor, index, value) {
+      if (!g_sensor_data.includes(bot_name)) {
+        g_sensor_data.push(bot_name);
+        g_sensor_data[bot_name] = [];
+      }
+      if (!g_sensor_data[bot_name].includes(sensor)) {
+        g_sensor_data[bot_name].push(sensor);
+        g_sensor_data[bot_name][sensor] = [];
+        g_default_sensor.forEach((item) => {
+          g_sensor_data[bot_name][sensor].push([]);
+        });
+      }
+      g_sensor_data[bot_name][sensor][index].push(value);
+    }
+
+    function registerDate(date) {
+      if (typeof g_max_date !== "number" || date > g_max_date) {
+        g_max_date = date;
+      }
+      if (typeof g_min_date !== "number" || date < g_min_date) {
+        g_min_date = date;
+      }
+    }
+
+    function updateDateSelector() {
+      const offset = new Date().getTimezoneOffset() * 60 * 1000;
+      const pDataInicial = document.getElementById("pDataInicial");
+      if (typeof g_min_date === "number") {
+        pDataInicial.value = new Date(g_min_date - offset).toISOString().split(".")[0];
+      } else {
+        pDataInicial.value = "";
+      }
+      const pDataFinal = document.getElementById("pDataFinal");
+      if (typeof g_max_date === "number") {
+        pDataFinal.value = new Date(g_max_date - offset).toISOString().split(".")[0];
+      } else {
+        pDataFinal.value = "";
+      }
+    }
+
+    function dateUpdate() {
+      const min_date = document.getElementById("pDataInicial").value;
+      const max_date = document.getElementById("pDataFinal").value;
+
+      g_chart_list.forEach((chart) => {
+        chart.options.scales.x.min = min_date;
+        chart.options.scales.x.max = max_date;
+        chart.update();
+        chart.resetZoom();
+      });
+    }
+
+    Chart.Tooltip.positioners.bottomPositioner = function (items) {
+      const pos = Chart.Tooltip.positioners.average(items);
+      if (pos === false) {
+        return false;
+      }
+      const chart = this.chart;
+      return {
+        x: pos.x,
+        y: chart.chartArea.bottom,
+        xAlign: "center",
+        yAlign: "bottom",
+      };
+    };
+
+    const chartAreaBorder = {
+      id: "chartAreaBorder",
+      beforeDraw(chart, args, options) {
+        if (chart.options.plugins.zoom.zoom.wheel.enabled) {
+          const {
+            ctx,
+            chartArea: { left, top, width, height },
+          } = chart;
+          ctx.save();
+          ctx.strokeStyle = options.borderColor;
+          ctx.lineWidth = options.borderWidth;
+          ctx.setLineDash(options.borderDash || []);
+          ctx.lineDashOffset = options.borderDashOffset;
+          ctx.strokeRect(left, top, width, height);
+          ctx.restore();
+        }
+      },
+    };
+
+    function addCanvasToDocument(pCanvasList, canvas) {
+      const p1 = document.createElement("p");
+      const div2 = document.createElement("div");
+      const div3 = document.createElement("div");
+      div2.className = "card";
+      div3.className = "panel-content text-center";
+      pCanvasList.appendChild(p1);
+      p1.appendChild(div2);
+      div2.appendChild(div3);
+      div3.appendChild(canvas);
+    }
+
+    function createChart() {
+      const pCanvasList = document.getElementById("pCanvasList");
+      g_sensor_data.forEach((bot_name) => {
+        g_sensor_data[bot_name].forEach((sensor) => {
+          try {
+            let data = [];
+            g_sensor_data[bot_name][sensor].forEach((value, index) => {
+              if (value.length) {
+                let line = g_default_sensor[index].chart;
+                data.push({
+                  type: line.type,
+                  hidden: line.hidden,
+                  label: line.label,
+                  borderColor: line.borderColor,
+                  data: value,
+                });
+              }
+            });
+            const canvas = document.createElement("canvas", {
+              width: 400,
+              height: 200,
+            });
+            addCanvasToDocument(pCanvasList, canvas);
+            const ctx = canvas.getContext("2d");
+            try {
+              g_chart_list.push(
+                new Chart(ctx, {
+                  data: {
+                    datasets: data,
+                  },
+                  options: {
+                    animation: false,
+                    responsive: true,
+                    scales: {
+                      y: {
+                        reverse: false,
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                      },
+                      x: {
+                        type: "time",
+                        min: g_min_date,
+                        max: g_max_date,
+                        time: {
+                          displayFormats: {
+                            day: "d MMM",
+                            hour: "d MMM, HH:mm",
+                            minute: "d MMM, HH:mm",
+                          },
+                        },
+                      },
+                    },
+                    interaction: {
+                      intersect: false,
+                      axis: "x",
+                      mode: "nearest",
+                    },
+                    plugins: {
+                      tooltip: {
+                        position: "bottomPositioner",
+                      },
+                      title: {
+                        display: true,
+                        text: bot_name + " - " + sensor,
+                      },
+                      zoom: {
+                        pan: {
+                          enabled: true,
+                          mode: "xy",
+                          overScaleMode: "xy",
+                        },
+                        zoom: {
+                          drag: {
+                            enabled: true,
+                            backgroundColor: "rgba(127,127,127,0.3)",
+                            modifierKey: "ctrl",
+                          },
+                          wheel: {
+                            enabled: true,
+                          },
+                          pinch: {
+                            enabled: true,
+                          },
+                          mode: "xy",
+                          overScaleMode: "xy",
+                        },
+                      },
+                      chartAreaBorder: {
+                        borderColor: "red",
+                        borderWidth: 1,
+                        borderDash: [10, 3],
+                        borderDashOffset: 5,
+                      },
+                    },
+                    onClick(e) {
+                      const chart = e.chart;
+                      const new_state = !chart.options.plugins.zoom.zoom.wheel.enabled;
+                      chart.options.plugins.zoom.zoom.wheel.enabled = new_state;
+                      chart.options.plugins.zoom.zoom.pinch.enabled = new_state;
+                      chart.options.plugins.zoom.zoom.drag.enabled = new_state;
+                      chart.options.plugins.zoom.pan.enabled = new_state;
+                      chart.update();
+                    },
+                  },
+                  plugins: [chartAreaBorder],
+                })
+              );
+            } catch (error) { }
+          } catch (error) { }
+        });
+      });
+    }
+
+    function resetElements() {
+      const pCanvasList = document.getElementById("pCanvasList");
+      while (pCanvasList.hasChildNodes()) {
+        pCanvasList.removeChild(pCanvasList.lastChild);
+      }
+      const event = document.getElementById("pEvents");
+      while (event.hasChildNodes()) {
+        event.removeChild(event.lastChild);
+      }
+      g_sensor_data = [];
+      g_chart_list = [];
+      g_max_date = undefined;
+      g_min_date = undefined;
+    }
+
+    class Message {
+      constructor(message) {
+        if (message.type === "message") {
+          this.message = message;
+        } else {
+          throw "Message type error!";
+        }
+      }
+      text() {
+        let text = "";
+        this.message.text_entities.forEach((fragment) => {
+          text += fragment.text;
+        });
+        if (text.length) {
+          return text;
+        } else {
+          throw "Text is empty!";
+        }
+      }
+      author() {
+        if (typeof this.message.from === "string") {
+          if (typeof this.message.author === "string") {
+            return this.message.from + " - " + this.message.author;
+          } else {
+            return this.message.from;
+          }
+        } else {
+          throw "Author error!";
+        }
+      }
+      #number(string) {
+        let number = Number.parseFloat(string);
+        if (typeof number !== "number" || Number.isNaN(number)) {
+          throw "NaN";
+        }
+        return number;
+      }
+      #numberAt(string, position) {
+        return this.#number(string.substring(position));
+      }
+      date() {
+        return this.#number(this.message.date_unixtime) * 1000;
+      }
+      #sensorName(line) {
+        if (line.startsWith("Nome:")) {
+          return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+        } else {
+          throw "Message content error!";
+        }
+      }
+      #sensorValue(line) {
+        try {
+          return this.#numberAt(line, line.indexOf(":") + 1);
+        } catch (err) {
+          return this.#numberAt(line, line.lastIndexOf("(") + 1);
+        }
+      }
+      parse(filter) {
+        let textLines = this.text().split("\n");
+        let author = this.author();
+        let sensor = this.#sensorName(textLines[0]);
+        textLines.shift();
+        let date = this.date();
+        let values = new Array(filter.length);
+        textLines.forEach((line) => {
+          filter.forEach((item, index) => {
+            try {
+              if (line.includes(item)) {
+                values[index] = this.#sensorValue(line);
+              }
+            } catch (err) { }
+          });
+        });
+        return { author, sensor, date, values };
+      }
+    }
+
+    function pushEvent(msg) {
+      const text = msg.text();
+      const author = msg.author();
+      const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
+
+      const event = document.getElementById("pEvents");
+      let pContainer;
+      if (event.childElementCount == 0) {
+        pContainer = document.createElement("p");
+        pContainer.className = "container";
+        pContainer.id = "pEventsContainer";
+        event.appendChild(pContainer);
+
+        const hEvent = document.createElement("h3");
+        hEvent.innerText = "Eventos";
+        pContainer.appendChild(hEvent);
+      } else {
+        pContainer = document.getElementById("pEventsContainer");
+      }
+      const div = document.createElement("div");
+      div.className = "container msg";
+      pContainer.appendChild(div);
+
+      const spanAuthor = document.createElement("span");
+      spanAuthor.className = "author-left";
+      spanAuthor.innerText = author;
+      div.appendChild(spanAuthor);
+
+      div.appendChild(document.createElement("br"));
+
+      const pText = document.createElement("p");
+      pText.innerText = text;
+      div.appendChild(pText);
+
+      const spanDate = document.createElement("span");
+      spanDate.className = "time-right";
+      spanDate.innerText = date;
+      div.appendChild(spanDate);
+    }
+
+    function importData(imported) {
+      const result = JSON.parse(imported);
+      let filter = [];
+      g_default_sensor.forEach((item) => filter.push(item.parse.key));
+      result.messages.forEach((message) => {
+        try {
+          const msg = new Message(message);
+          try {
+            const result = msg.parse(filter);
+            result.values.forEach((value, index) => {
+              pushValue(result.author, result.sensor, index, {
+                x: result.date,
+                y: value,
+              });
+            });
+            registerDate(result.date);
+          } catch (err) {
+            try {
+              pushEvent(msg);
+            } catch (err) { }
+          }
+        } catch (err) { }
+      });
+    }
+
+    function processJson(imported) {
+      resetElements();
+      importData(imported);
+      updateDateSelector();
+      createChart();
+    }
+
+    function handleFiles(files) {
+      const reader = new FileReader();
+      reader.readAsText(files[0]);
+      reader.onload = () => {
+        try {
+          processJson(reader.result);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+    }
+  </script>
+  <div class="container-sm">
+    <p>
+      <img src="sensor.log.png" class="rounded" width="30%" />
+    </p>
+    <p>
+      <!-- Nav pills -->
+    <ul class="nav nav-pills" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#chart">Gráficos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#calc1">mm / %</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#calc2">% / mm</a>
+      </li>
+    </ul>
+    </p>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="chart" class="container tab-pane fade show active">
+        <style>
+          .msg {
+            background-color: #f7f7f7;
+          }
+
+          .time-right {
+            float: right;
+            color: #aaa;
+          }
+
+          .author-left {
+            font-weight: bold;
+            float: left;
+            color: #07c3f2;
+          }
+        </style>
+        <p>
+        <div>
+          <label for="pFileInput">Carregue um arquivo:</label>
+          <input type="file" id="pFileInput" accept=".json" onchange="handleFiles(this.files)" />
+        </div>
+        </p>
+        <p>
+        <div>
+          <!-- <h3>Filtro</h3> -->
+          <p>
+            <label for="pDataInicial">Inicio:</label>
+            <input id="pDataInicial" type="datetime-local" />
+          </p>
+          <p>
+            <label for="pDataFinal">Fim:</label>
+            <input id="pDataFinal" type="datetime-local" />
+          </p>
+          <input id="pDateFilter" type="button" value="Filtrar" onclick="dateUpdate()" />
+        </div>
+        </p>
+        <p id="pCanvasList"></p>
+        <p id="pEvents"></p>
+      </div>
+      <div id="calc1" class="container tab-pane fade">
+        <fieldset class="form-group">
+          <form id="mm2percent">
+            <div class="form-group">
+              <legend>Distância (mm)</legend>
+              <label for="mmMillimeter"> </label>
+              <input id="mmMillimeter" type="number" value="350" onchange="calculePercent()" />
+            </div>
+            <div class="form-group">
+              <legend>Offset (mm)</legend>
+              <label for="mmOffset"> </label>
+              <input id="mmOffset" type="number" value="300" onchange="calculePercent()" />
+            </div>
+            <div class="form-group">
+              <legend>Bottom (mm)</legend>
+              <label for="mmBottom"> </label>
+              <input id="mmBottom" type="number" value="1300" onchange="calculePercent()" />
+            </div>
+            <div class="form-group">
+              <legend>Valor (%)</legend>
+              <label for="mmPercent"> </label>
+              <input id="mmPercent" value="95" readonly />
+            </div>
+          </form>
+        </fieldset>
+      </div>
+      <div id="calc2" class="container tab-pane fade">
+        <fieldset class="form-group">
+          <form id="percent2mm">
+            <div class="form-group">
+              <legend>Valor (%)</legend>
+              <label for="pPercent"> </label>
+              <input id="pPercent" type="number" value="95" onchange="calculeMillimeter()" />
+            </div>
+            <div class="form-group">
+              <legend>Offset (mm)</legend>
+              <label for="pOffset"> </label>
+              <input id="pOffset" type="number" value="300" onchange="calculeMillimeter()" />
+            </div>
+            <div class="form-group">
+              <legend>Bottom (mm)</legend>
+              <label for="pBottom"> </label>
+              <input id="pBottom" type="number" value="1300" onchange="calculeMillimeter()" />
+            </div>
+            <div class="form-group">
+              <legend>Distância (mm)</legend>
+              <label for="pMillimeter"> </label>
+              <input id="pMillimeter" value="350" readonly />
+            </div>
+          </form>
+        </fieldset>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
