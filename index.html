@@ -311,14 +311,17 @@
       link.click();
     }
 
-    function newCanvasContext2d(title) {
+    function newCanvasContext2d(title, index) {
       const pCanvasList = document.getElementById("pCanvasList");
-      const p1 = document.createElement("p");
+      const div0 = document.createElement("div");
+      const div1 = document.createElement("div");
       const div2 = document.createElement("div");
       const div3 = document.createElement("div");
       const canvas = document.createElement("canvas");
       const divBtn = document.createElement("div");
       const downloadBtn = document.createElement("input");
+      div0.className = index == 0 ? "carousel-item active" : "carousel-item";
+      div1.className = "d-block w-100";
       div2.className = "card";
       div3.className = "card-body";
       divBtn.className = "d-grid gap-2";
@@ -327,8 +330,9 @@
       downloadBtn.value = "Download";
       downloadBtn.addEventListener("click", function () { download_image(canvas, title); });
 
-      pCanvasList.appendChild(p1);
-      p1.appendChild(div2);
+      pCanvasList.appendChild(div0);
+      div0.appendChild(div1);
+      div1.appendChild(div2);
       div2.appendChild(div3);
       div3.appendChild(canvas);
       div3.appendChild(document.createElement("p"));
@@ -339,7 +343,7 @@
 
     function createChart() {
       g_sensor_data.forEach((bot_name) => {
-        g_sensor_data[bot_name].forEach((sensor) => {
+        g_sensor_data[bot_name].forEach((sensor, index) => {
           try {
             let data = [];
             g_sensor_data[bot_name][sensor].forEach((value, index) => {
@@ -355,7 +359,7 @@
               }
             });
             const title = bot_name + " - " + sensor;
-            const ctx = newCanvasContext2d(title);
+            const ctx = newCanvasContext2d(title, index);
             try {
               g_chart_list.push(
                 new Chart(ctx, {
@@ -747,7 +751,19 @@
           </div>
         </div>
         </p>
-        <p id="pCanvasList"></p>
+        <p>
+        <div id="carouselChart" class="carousel slide carousel-fade">
+          <div id="pCanvasList" class="carousel-inner"> </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselChart" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="false"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselChart" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="false"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+        </p>
         <p id="pEvents"></p>
       </div>
       <div id="calc1" class="container tab-pane fade">
