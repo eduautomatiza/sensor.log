@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -223,15 +224,13 @@
       }
     }
 
-    function updateDateSelector() {
+    function updateDateSelector(pDataInicial, pDataFinal) {
       const offset = new Date().getTimezoneOffset() * 60 * 1000;
-      const pDataInicial = document.getElementById("pDataInicial");
       if (typeof g_min_date === "number") {
         pDataInicial.value = new Date(g_min_date - offset).toISOString().split(".")[0];
       } else {
         pDataInicial.value = "";
       }
-      const pDataFinal = document.getElementById("pDataFinal");
       if (typeof g_max_date === "number") {
         pDataFinal.value = new Date(g_max_date - offset).toISOString().split(".")[0];
       } else {
@@ -239,13 +238,21 @@
       }
     }
 
-    function dateUpdate() {
+    function chartUpdate() {
+      console.log("updating...");
       const min_date = document.getElementById("pDataInicial").value;
       const max_date = document.getElementById("pDataFinal").value;
 
       g_chart_list.forEach((chart) => {
         chart.options.scales.x.min = min_date;
         chart.options.scales.x.max = max_date;
+        chart.data.datasets.forEach((data) => {
+          g_default_sensor.forEach((item) => {
+            if (item.chart.label == data.label) {
+              data.hidden = item.chart.hidden;
+            }
+          });
+        });
         chart.update();
         chart.resetZoom();
       });
@@ -284,20 +291,53 @@
       },
     };
 
-    function addCanvasToDocument(pCanvasList, canvas) {
+    const chartBackgroundColor = {
+      id: 'customCanvasBackgroundColor',
+      beforeDraw: (chart, args, options) => {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = options.color || '#99ffff';
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        ctx.restore();
+      }
+    };
+
+    function download_image(canvas, title) {
+      image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      var link = document.createElement('a');
+      link.download = title + ".png";
+      link.href = image;
+      link.click();
+    }
+
+    function newCanvasContext2d(title) {
+      const pCanvasList = document.getElementById("pCanvasList");
       const p1 = document.createElement("p");
       const div2 = document.createElement("div");
       const div3 = document.createElement("div");
+      const canvas = document.createElement("canvas");
+      const divBtn = document.createElement("div");
+      const downloadBtn = document.createElement("input");
       div2.className = "card";
-      div3.className = "panel-content text-center";
+      div3.className = "card-body";
+      divBtn.className = "d-grid gap-2";
+      downloadBtn.className = "btn btn-primary";
+      downloadBtn.type = "button";
+      downloadBtn.value = "Download";
+      downloadBtn.addEventListener("click", function () { download_image(canvas, title); });
+
       pCanvasList.appendChild(p1);
       p1.appendChild(div2);
       div2.appendChild(div3);
       div3.appendChild(canvas);
+      div3.appendChild(document.createElement("p"));
+      divBtn.appendChild(downloadBtn);
+      div3.appendChild(divBtn);
+      return canvas.getContext("2d");
     }
 
     function createChart() {
-      const pCanvasList = document.getElementById("pCanvasList");
       g_sensor_data.forEach((bot_name) => {
         g_sensor_data[bot_name].forEach((sensor) => {
           try {
@@ -314,12 +354,8 @@
                 });
               }
             });
-            const canvas = document.createElement("canvas", {
-              width: 400,
-              height: 200,
-            });
-            addCanvasToDocument(pCanvasList, canvas);
-            const ctx = canvas.getContext("2d");
+            const title = bot_name + " - " + sensor;
+            const ctx = newCanvasContext2d(title);
             try {
               g_chart_list.push(
                 new Chart(ctx, {
@@ -354,12 +390,19 @@
                       mode: "nearest",
                     },
                     plugins: {
+                      legend: {
+                        display: true,
+                        onClick: () => { },
+                      },
+                      customCanvasBackgroundColor: {
+                        color: "rgba(248,248,248,1)",
+                      },
                       tooltip: {
                         position: "bottomPositioner",
                       },
                       title: {
                         display: true,
-                        text: bot_name + " - " + sensor,
+                        text: title,
                       },
                       zoom: {
                         pan: {
@@ -369,15 +412,15 @@
                         },
                         zoom: {
                           drag: {
-                            enabled: true,
-                            backgroundColor: "rgba(127,127,127,0.3)",
+                            enabled: false,
+                            backgroundColor: "rgba(192,192,192,0.3)",
                             modifierKey: "ctrl",
                           },
                           wheel: {
-                            enabled: true,
+                            enabled: false,
                           },
                           pinch: {
-                            enabled: true,
+                            enabled: false,
                           },
                           mode: "xy",
                           overScaleMode: "xy",
@@ -400,12 +443,73 @@
                       chart.update();
                     },
                   },
-                  plugins: [chartAreaBorder],
+                  plugins: [chartBackgroundColor, chartAreaBorder],
                 })
               );
             } catch (error) { }
           } catch (error) { }
         });
+      });
+    }
+
+    function createSelector() {
+      const pSelector = document.getElementById("pSelector");
+
+      // const p_start = document.createElement("p");
+      const input_start = document.createElement("input");
+      const label_start = document.createElement("label");
+
+      // const p_end = document.createElement("p");
+      const input_end = document.createElement("input");
+      const label_end = document.createElement("label");
+
+      label_start.innerHTML = "Início:";
+      label_end.innerHTML = "Fim:";
+
+      input_start.id = "pDataInicial";
+      input_end.id = "pDataFinal";
+
+      input_start.type = "datetime-local";
+      input_end.type = "datetime-local";
+
+      input_start.className = "input-group mb-3";
+      input_end.className = "input-group mb-3";
+
+      input_start.addEventListener("change", () => { chartUpdate() });
+      input_end.addEventListener("change", () => { chartUpdate() });
+
+      pSelector.appendChild(label_start);
+      label_start.appendChild(input_start);
+
+      pSelector.appendChild(label_end);
+      label_end.appendChild(input_end);
+
+      updateDateSelector(input_start, input_end);
+
+      g_default_sensor.forEach((item, index) => {
+
+        const div = document.createElement("div");
+        const input = document.createElement("input");
+        const label = document.createElement("label");
+
+        div.className = "form-check form-switch";
+        input.className = "form-check-input";
+        label.className = "form-check-label";
+
+        input.checked = item.chart.hidden ? false : true;
+
+        input.type = "checkbox";
+        input.role = "switch";
+        label.innerHTML = item.chart.label;
+
+        input.addEventListener("click", function () {
+          item.chart.hidden = input.checked ? false : true;
+          chartUpdate();
+        });
+
+        pSelector.appendChild(div);
+        div.appendChild(label);
+        label.appendChild(input);
       });
     }
 
@@ -417,6 +521,10 @@
       const event = document.getElementById("pEvents");
       while (event.hasChildNodes()) {
         event.removeChild(event.lastChild);
+      }
+      const selector = document.getElementById("pSelector");
+      while (selector.hasChildNodes()) {
+        selector.removeChild(selector.lastChild);
       }
       g_sensor_data = [];
       g_chart_list = [];
@@ -569,7 +677,7 @@
     function processJson(imported) {
       resetElements();
       importData(imported);
-      updateDateSelector();
+      createSelector();
       createChart();
     }
 
@@ -586,23 +694,27 @@
     }
   </script>
   <div class="container-sm">
-    <p>
-      <img src="sensor.log.png" class="rounded" width="30%" />
-    </p>
-    <p>
-      <!-- Nav pills -->
-    <ul class="nav nav-pills" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" data-bs-toggle="tab" href="#chart">Gráficos</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#calc1">mm / %</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="tab" href="#calc2">% / mm</a>
-      </li>
-    </ul>
-    </p>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="text-center">
+        <img src="sensor.log.png" width="80%" />
+      </div>
+      <div class="container-fluid">
+        <p>
+          <!-- Nav pills -->
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#chart">📊 Gráficos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#calc1">📏 mm ➛ %</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#calc2">📏 % ➛ mm</a>
+          </li>
+        </ul>
+        </p>
+      </div>
+    </nav>
 
     <!-- Tab panes -->
     <div class="tab-content">
@@ -624,23 +736,15 @@
           }
         </style>
         <p>
-        <div>
-          <label for="pFileInput">Carregue um arquivo:</label>
-          <input type="file" id="pFileInput" accept=".json" onchange="handleFiles(this.files)" />
-        </div>
-        </p>
-        <p>
-        <div>
-          <!-- <h3>Filtro</h3> -->
-          <p>
-            <label for="pDataInicial">Inicio:</label>
-            <input id="pDataInicial" type="datetime-local" />
-          </p>
-          <p>
-            <label for="pDataFinal">Fim:</label>
-            <input id="pDataFinal" type="datetime-local" />
-          </p>
-          <input id="pDateFilter" type="button" value="Filtrar" onclick="dateUpdate()" />
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="pFileInput" class="form-label">Carregue um arquivo:</label>
+              <input type="file" class="form-control" id="pFileInput" accept=".json"
+                onchange="handleFiles(this.files)" />
+            </div>
+            <p id="pSelector"> </p>
+          </div>
         </div>
         </p>
         <p id="pCanvasList"></p>
@@ -649,25 +753,25 @@
       <div id="calc1" class="container tab-pane fade">
         <fieldset class="form-group">
           <form id="mm2percent">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Distância (mm)</legend>
-              <label for="mmMillimeter"> </label>
-              <input id="mmMillimeter" type="number" value="350" onchange="calculePercent()" />
+              <label for="mmMillimeter" class="form-label"> </label>
+              <input id="mmMillimeter" class="form-control" type="number" value="350" onchange="calculePercent()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Offset (mm)</legend>
-              <label for="mmOffset"> </label>
-              <input id="mmOffset" type="number" value="300" onchange="calculePercent()" />
+              <label for="mmOffset" class="form-label"> </label>
+              <input id="mmOffset" class="form-control" type="number" value="300" onchange="calculePercent()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Bottom (mm)</legend>
-              <label for="mmBottom"> </label>
-              <input id="mmBottom" type="number" value="1300" onchange="calculePercent()" />
+              <label for="mmBottom" class="form-label"> </label>
+              <input id="mmBottom" class="form-control" type="number" value="1300" onchange="calculePercent()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Valor (%)</legend>
-              <label for="mmPercent"> </label>
-              <input id="mmPercent" value="95" readonly />
+              <label for="mmPercent" class="form-label"> </label>
+              <input id="mmPercent" class="form-control" value="95" readonly />
             </div>
           </form>
         </fieldset>
@@ -675,25 +779,25 @@
       <div id="calc2" class="container tab-pane fade">
         <fieldset class="form-group">
           <form id="percent2mm">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Valor (%)</legend>
-              <label for="pPercent"> </label>
-              <input id="pPercent" type="number" value="95" onchange="calculeMillimeter()" />
+              <label for="pPercent" class="form-label"> </label>
+              <input id="pPercent" class="form-control" type="number" value="95" onchange="calculeMillimeter()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Offset (mm)</legend>
-              <label for="pOffset"> </label>
-              <input id="pOffset" type="number" value="300" onchange="calculeMillimeter()" />
+              <label for="pOffset" class="form-label"> </label>
+              <input id="pOffset" class="form-control" type="number" value="300" onchange="calculeMillimeter()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Bottom (mm)</legend>
-              <label for="pBottom"> </label>
-              <input id="pBottom" type="number" value="1300" onchange="calculeMillimeter()" />
+              <label for="pBottom" class="form-label"> </label>
+              <input id="pBottom" class="form-control" type="number" value="1300" onchange="calculeMillimeter()" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <legend>Distância (mm)</legend>
-              <label for="pMillimeter"> </label>
-              <input id="pMillimeter" value="350" readonly />
+              <label for="pMillimeter" class="form-label"> </label>
+              <input id="pMillimeter" class="form-control" value="350" readonly />
             </div>
           </form>
         </fieldset>
@@ -701,4 +805,5 @@
     </div>
   </div>
 </body>
+
 </html>
