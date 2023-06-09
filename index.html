@@ -312,6 +312,7 @@
     }
 
     function newCanvasContext2d(title, index) {
+      const carousel = new bootstrap.Carousel("#pCarouselChart");
       const pCanvasList = document.getElementById("pCanvasList");
       const div0 = document.createElement("div");
       const div1 = document.createElement("div");
@@ -320,24 +321,39 @@
       const canvas = document.createElement("canvas");
       const divBtn = document.createElement("div");
       const downloadBtn = document.createElement("input");
+      const prevBtn = document.createElement("input");
+      const nextBtn = document.createElement("input");
       div0.className = index == 0 ? "carousel-item active" : "carousel-item";
       div1.className = "d-block w-100";
       div2.className = "card";
       div3.className = "card-body";
-      divBtn.className = "d-grid gap-2";
-      downloadBtn.className = "btn btn-primary";
+      divBtn.className = "card-body row gap-2 justify-content-between";
+      divBtn.role = "group";
+
+      prevBtn.className = "btn btn-outline-primary col";
+      prevBtn.type = "button";
+      prevBtn.value = "Anterior";
+      prevBtn.addEventListener("click", () => { carousel.prev(); });
+
+      nextBtn.className = "btn btn-outline-primary col";
+      nextBtn.type = "button";
+      nextBtn.value = "Próximo";
+      nextBtn.addEventListener("click", () => { carousel.next(); });
+
+      downloadBtn.className = "btn btn-primary col-md-auto";
       downloadBtn.type = "button";
       downloadBtn.value = "Download";
-      downloadBtn.addEventListener("click", function () { download_image(canvas, title); });
+      downloadBtn.addEventListener("click", () => { download_image(canvas, title); });
 
       pCanvasList.appendChild(div0);
       div0.appendChild(div1);
       div1.appendChild(div2);
       div2.appendChild(div3);
       div3.appendChild(canvas);
-      div3.appendChild(document.createElement("p"));
-      divBtn.appendChild(downloadBtn);
       div3.appendChild(divBtn);
+      divBtn.appendChild(prevBtn);
+      divBtn.appendChild(downloadBtn);
+      divBtn.appendChild(nextBtn);
       return canvas.getContext("2d");
     }
 
@@ -395,7 +411,7 @@
                     },
                     plugins: {
                       legend: {
-                        display: true,
+                        display: false,
                         onClick: () => { },
                       },
                       customCanvasBackgroundColor: {
@@ -752,16 +768,8 @@
         </div>
         </p>
         <p>
-        <div id="carouselChart" class="carousel slide carousel-fade">
+        <div id="pCarouselChart" class="carousel slide carousel-fade">
           <div id="pCanvasList" class="carousel-inner"> </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselChart" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="false"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselChart" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="false"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
         </div>
         </p>
         <p id="pEvents"></p>
