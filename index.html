@@ -273,17 +273,17 @@
         title() {
           return this.chart_.options.plugins.title.text;
         }
-        reset(x_min, x_max) {
+        resetZoom(x_min, x_max) {
           this.chart_.options.scales.x.min = x_min;
           this.chart_.options.scales.x.max = x_max;
           this.chart_.update();
-          this.chart_.resetZoom();
+          this.resetZoom();
         }
-        reset() {
+        resetZoom() {
           this.chart_.resetZoom();
         }
         update() {
-          let length = this.data_.length;
+          let length = this.length();
           if (length) {
             this.index_ += length;
             this.index_ %= length;
@@ -303,6 +303,9 @@
         position(position) {
           this.index_ = position;
           this.update();
+        }
+        length() {
+          return this.data_.length;
         }
       }
 
@@ -359,7 +362,7 @@
         link.click();
       }
 
-      function newCanvasContext2d() {
+      function newCanvasContext2d(navDisable) {
         const pCanvasList = document.getElementById("pCanvasList");
         const div1 = document.createElement("div");
         const div2 = document.createElement("div");
@@ -390,11 +393,16 @@
           g_chartUpdate.next();
         });
 
+        if (navDisable) {
+          prevBtn.disabled = true;
+          nextBtn.disabled = true;
+        }
+
         resetBtn.className = "btn btn-primary col-md-auto";
         resetBtn.type = "button";
         resetBtn.value = "Reset Zoom";
         resetBtn.addEventListener("click", () => {
-          g_chartUpdate.reset();
+          g_chartUpdate.resetZoom();
         });
 
         downloadBtn.className = "btn btn-primary col-md-auto";
@@ -442,9 +450,9 @@
         return datasets;
       }
 
-      function createChart() {
+      function createChart(navDisable) {
         let chart = {};
-        const ctx = newCanvasContext2d();
+        const ctx = newCanvasContext2d(navDisable);
         try {
           chart = new Chart(ctx, {
             data: {
@@ -536,7 +544,7 @@
       function resetChartView() {
         const pDataInicial = document.getElementById("pDataInicial");
         const pDataFinal = document.getElementById("pDataFinal");
-        g_chartUpdate.reset(pDataInicial.value, pDataFinal.value);
+        g_chartUpdate.resetZoom(pDataInicial.value, pDataFinal.value);
       }
 
       function createSelector() {
@@ -738,7 +746,11 @@
 
       function processJson(imported) {
         resetElements();
-        g_chartUpdate = new ChartUpdate(createDataset(importData(imported)), createChart());
+        let sensor_data = importData(imported);
+        let datasets = createDataset(sensor_data);
+        let navDisable = datasets.length < 2;
+        let chart = createChart(navDisable);
+        g_chartUpdate = new ChartUpdate(datasets, chart);
         createSelector();
       }
 
