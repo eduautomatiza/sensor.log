@@ -57,9 +57,6 @@
     <script>
       var g_chartUpdate;
 
-      var g_max_date = undefined;
-      var g_min_date = undefined;
-
       const g_default_sensor = [
         {
           parse: { key: "Nível:" },
@@ -222,41 +219,12 @@
         }
       }
 
-      function pushValue(sensor_data, bot_name, sensor, index, value) {
-        if (!sensor_data.includes(bot_name)) {
-          sensor_data.push(bot_name);
-          sensor_data[bot_name] = [];
-        }
-        if (!sensor_data[bot_name].includes(sensor)) {
-          sensor_data[bot_name].push(sensor);
-          sensor_data[bot_name][sensor] = [];
-          g_default_sensor.forEach((item) => {
-            sensor_data[bot_name][sensor].push([]);
-          });
-        }
-        sensor_data[bot_name][sensor][index].push(value);
-      }
-
-      function registerDate(date) {
-        if (typeof g_max_date !== "number" || date > g_max_date) {
-          g_max_date = date;
-        }
-        if (typeof g_min_date !== "number" || date < g_min_date) {
-          g_min_date = date;
-        }
-      }
-
-      function updateDateSelector(pDataInicial, pDataFinal) {
+      function dateIsoString(a_date) {
         const offset = new Date().getTimezoneOffset() * 60 * 1000;
-        if (typeof g_min_date === "number") {
-          pDataInicial.value = new Date(g_min_date - offset).toISOString().split(".")[0];
+        if (typeof a_date === "number") {
+          return new Date(a_date - offset).toISOString().split(".")[0];
         } else {
-          pDataInicial.value = "";
-        }
-        if (typeof g_max_date === "number") {
-          pDataFinal.value = new Date(g_max_date - offset).toISOString().split(".")[0];
-        } else {
-          pDataFinal.value = "";
+          return "";
         }
       }
 
@@ -379,28 +347,33 @@
         divBtn.className = "card-body row gap-2 justify-content-between";
         divBtn.role = "group";
 
-        prevBtn.className = "btn btn-outline-primary col";
+        if (navDisable) {
+          prevBtn.disabled = true;
+          prevBtn.className = "btn btn-outline-secondary col";
+        } else {
+          prevBtn.className = "btn btn-outline-primary col";
+        }
         prevBtn.type = "button";
         prevBtn.value = "Anterior";
         prevBtn.addEventListener("click", () => {
           g_chartUpdate.prev();
         });
 
-        nextBtn.className = "btn btn-outline-primary col";
+        if (navDisable) {
+          nextBtn.disabled = true;
+          nextBtn.className = "btn btn-outline-secondary col";
+        } else {
+          nextBtn.className = "btn btn-outline-primary col";
+        }
         nextBtn.type = "button";
         nextBtn.value = "Próximo";
         nextBtn.addEventListener("click", () => {
           g_chartUpdate.next();
         });
 
-        if (navDisable) {
-          prevBtn.disabled = true;
-          nextBtn.disabled = true;
-        }
-
         resetBtn.className = "btn btn-primary col-md-auto";
         resetBtn.type = "button";
-        resetBtn.value = "Reset Zoom";
+        resetBtn.value = "Zoom Padrão";
         resetBtn.addEventListener("click", () => {
           g_chartUpdate.resetZoom();
         });
@@ -469,8 +442,6 @@
                 },
                 x: {
                   type: "time",
-                  min: g_min_date,
-                  max: g_max_date,
                   time: {
                     displayFormats: {
                       day: "d MMM",
@@ -541,43 +512,51 @@
         return chart;
       }
 
-      function createSelector() {
+      function createSelector(start_date, end_date) {
         const pSelector = document.getElementById("pSelector");
-
-        // const p_start = document.createElement("p");
+        const divSelector = document.createElement("div");
         const input_start = document.createElement("input");
         const label_start = document.createElement("label");
-
-        // const p_end = document.createElement("p");
         const input_end = document.createElement("input");
         const label_end = document.createElement("label");
+        const resetBtn = document.createElement("input");
 
+        divSelector.className = "vstack gap-2";
+
+        label_start.className = "form-label";
         label_start.innerHTML = "Início:";
+        label_end.className = "form-label";
         label_end.innerHTML = "Fim:";
 
-        input_start.id = "pDataInicial";
-        input_end.id = "pDataFinal";
-
+        input_start.className = "form-control";
         input_start.type = "datetime-local";
-        input_end.type = "datetime-local";
-
-        input_start.className = "input-group mb-3";
-        input_end.className = "input-group mb-3";
-
+        input_start.value = dateIsoString(start_date);
         input_start.addEventListener("change", () => {
           g_chartUpdate.zoom(input_start.value, input_end.value);
         });
+
+        input_end.className = "form-control";
+        input_end.type = "datetime-local";
+        input_end.value = dateIsoString(end_date);
         input_end.addEventListener("change", () => {
           g_chartUpdate.zoom(input_start.value, input_end.value);
         });
 
-        pSelector.appendChild(label_start);
+        resetBtn.className = "btn btn-outline-primary";
+        resetBtn.type = "button";
+        resetBtn.value = "Redefinir";
+        resetBtn.addEventListener("click", () => {
+          input_start.value = dateIsoString(start_date);
+          input_end.value = dateIsoString(end_date);
+          g_chartUpdate.zoom(input_start.value, input_end.value);
+        });
+
         label_start.appendChild(input_start);
-
-        pSelector.appendChild(label_end);
         label_end.appendChild(input_end);
-
-        updateDateSelector(input_start, input_end);
+        pSelector.appendChild(divSelector);
+        divSelector.appendChild(label_start);
+        divSelector.appendChild(label_end);
+        divSelector.appendChild(resetBtn);
       }
 
       function resetElements() {
@@ -594,8 +573,6 @@
           selector.removeChild(selector.lastChild);
         }
         g_chartUpdate = null;
-        g_max_date = undefined;
-        g_min_date = undefined;
       }
 
       class Message {
@@ -676,80 +653,109 @@
       }
 
       function pushEvent(msg) {
-        const text = msg.text();
-        const author = msg.author();
-        const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
+        try {
+          const text = msg.text();
+          const author = msg.author();
+          const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
 
-        const event = document.getElementById("pEvents");
-        let pContainer;
-        if (event.childElementCount == 0) {
-          pContainer = document.createElement("p");
-          pContainer.className = "container";
-          pContainer.id = "pEventsContainer";
-          event.appendChild(pContainer);
+          const event = document.getElementById("pEvents");
+          let pContainer;
+          if (event.childElementCount == 0) {
+            pContainer = document.createElement("p");
+            pContainer.className = "container";
+            pContainer.id = "pEventsContainer";
+            event.appendChild(pContainer);
 
-          const hEvent = document.createElement("h3");
-          hEvent.innerText = "Eventos";
-          pContainer.appendChild(hEvent);
-        } else {
-          pContainer = document.getElementById("pEventsContainer");
-        }
-        const div = document.createElement("div");
-        div.className = "container msg";
-        pContainer.appendChild(div);
+            const hEvent = document.createElement("h3");
+            hEvent.innerText = "Eventos";
+            pContainer.appendChild(hEvent);
+          } else {
+            pContainer = document.getElementById("pEventsContainer");
+          }
+          const div = document.createElement("div");
+          div.className = "container msg";
+          pContainer.appendChild(div);
 
-        const spanAuthor = document.createElement("span");
-        spanAuthor.className = "author-left";
-        spanAuthor.innerText = author;
-        div.appendChild(spanAuthor);
+          const spanAuthor = document.createElement("span");
+          spanAuthor.className = "author-left";
+          spanAuthor.innerText = author;
+          div.appendChild(spanAuthor);
 
-        div.appendChild(document.createElement("br"));
+          div.appendChild(document.createElement("br"));
 
-        const pText = document.createElement("p");
-        pText.innerText = text;
-        div.appendChild(pText);
+          const pText = document.createElement("p");
+          pText.innerText = text;
+          div.appendChild(pText);
 
-        const spanDate = document.createElement("span");
-        spanDate.className = "time-right";
-        spanDate.innerText = date;
-        div.appendChild(spanDate);
+          const spanDate = document.createElement("span");
+          spanDate.className = "time-right";
+          spanDate.innerText = date;
+          div.appendChild(spanDate);
+        } catch (err) {}
       }
 
-      function importData(imported) {
-        let sensor_data = [];
-        const result = JSON.parse(imported);
-        let filter = [];
-        g_default_sensor.forEach((item) => filter.push(item.parse.key));
-        result.messages.forEach((message) => {
-          try {
-            const msg = new Message(message);
+      class SensorValues {
+        data;
+        date;
+        event;
+        constructor(imported) {
+          this.data = [];
+          this.date = { start: null, end: null };
+          this.event = [];
+          this.#import(imported);
+        }
+        #push(bot_name, sensor, index, a_date, value) {
+          if (!this.data.includes(bot_name)) {
+            this.data.push(bot_name);
+            this.data[bot_name] = [];
+          }
+          if (!this.data[bot_name].includes(sensor)) {
+            this.data[bot_name].push(sensor);
+            this.data[bot_name][sensor] = [];
+            g_default_sensor.forEach((item) => {
+              this.data[bot_name][sensor].push([]);
+            });
+          }
+          this.data[bot_name][sensor][index].push({ x: a_date, y: value });
+
+          if (typeof this.date.max !== "number" || a_date > this.date.max) {
+            this.date.max = a_date;
+          }
+          if (typeof this.date.min !== "number" || a_date < this.date.min) {
+            this.date.min = a_date;
+          }
+        }
+        #import(imported) {
+          const result = JSON.parse(imported);
+          let filter = [];
+          g_default_sensor.forEach((item) => filter.push(item.parse.key));
+          result.messages.forEach((message) => {
             try {
-              const result = msg.parse(filter);
-              result.values.forEach((value, index) => {
-                pushValue(sensor_data, result.author, result.sensor, index, {
-                  x: result.date,
-                  y: value,
-                });
-              });
-              registerDate(result.date);
-            } catch (err) {
+              const msg = new Message(message);
               try {
-                pushEvent(msg);
-              } catch (err) {}
-            }
-          } catch (err) {}
-        });
-        return sensor_data;
+                const result = msg.parse(filter);
+                result.values.forEach((value, index) => {
+                  this.#push(result.author, result.sensor, index, result.date, value);
+                });
+              } catch (err) {
+                this.event.push(msg);
+              }
+            } catch (err) {}
+          });
+        }
       }
 
       function processJson(imported) {
         resetElements();
-        let sensor_data = importData(imported);
-        let datasets = createDataset(sensor_data);
+        let sensor_values = new SensorValues(imported);
+        let datasets = createDataset(sensor_values.data);
         let navDisable = datasets.length < 2;
         let chart = createChart(navDisable);
         g_chartUpdate = new ChartUpdate(datasets, chart);
-        createSelector();
+        createSelector(sensor_values.date.min, sensor_values.date.max);
+        sensor_values.event.forEach((msg) => {
+          pushEvent(msg);
+        });
       }
 
       function handleFiles(files) {
@@ -817,7 +823,7 @@
                   onchange="handleFiles(this.files)"
                 />
               </div>
-              <p id="pSelector"></p>
+              <div id="pSelector"></div>
             </div>
           </div>
           <p></p>
