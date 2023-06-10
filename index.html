@@ -55,8 +55,7 @@
       crossorigin="anonymous"
     ></script>
     <script>
-      var g_sensor_data = [];
-      var g_chart_list = [];
+      var g_chartUpdate;
 
       var g_max_date = undefined;
       var g_min_date = undefined;
@@ -223,19 +222,19 @@
         }
       }
 
-      function pushValue(bot_name, sensor, index, value) {
-        if (!g_sensor_data.includes(bot_name)) {
-          g_sensor_data.push(bot_name);
-          g_sensor_data[bot_name] = [];
+      function pushValue(sensor_data, bot_name, sensor, index, value) {
+        if (!sensor_data.includes(bot_name)) {
+          sensor_data.push(bot_name);
+          sensor_data[bot_name] = [];
         }
-        if (!g_sensor_data[bot_name].includes(sensor)) {
-          g_sensor_data[bot_name].push(sensor);
-          g_sensor_data[bot_name][sensor] = [];
+        if (!sensor_data[bot_name].includes(sensor)) {
+          sensor_data[bot_name].push(sensor);
+          sensor_data[bot_name][sensor] = [];
           g_default_sensor.forEach((item) => {
-            g_sensor_data[bot_name][sensor].push([]);
+            sensor_data[bot_name][sensor].push([]);
           });
         }
-        g_sensor_data[bot_name][sensor][index].push(value);
+        sensor_data[bot_name][sensor][index].push(value);
       }
 
       function registerDate(date) {
@@ -261,16 +260,50 @@
         }
       }
 
-      function chartUpdate() {
-        const min_date = document.getElementById("pDataInicial").value;
-        const max_date = document.getElementById("pDataFinal").value;
-
-        g_chart_list.forEach((chart) => {
-          chart.options.scales.x.min = min_date;
-          chart.options.scales.x.max = max_date;
-          chart.update();
-          chart.resetZoom();
-        });
+      class ChartUpdate {
+        #index_;
+        #chart_;
+        #data_;
+        constructor(data, chart) {
+          this.index_ = 0;
+          this.chart_ = chart;
+          this.data_ = data;
+          this.update();
+        }
+        title() {
+          return this.chart_.options.plugins.title.text;
+        }
+        reset(x_min, x_max) {
+          this.chart_.options.scales.x.min = x_min;
+          this.chart_.options.scales.x.max = x_max;
+          this.chart_.update();
+          this.chart_.resetZoom();
+        }
+        reset() {
+          this.chart_.resetZoom();
+        }
+        update() {
+          let length = this.data_.length;
+          if (length) {
+            this.index_ += length;
+            this.index_ %= length;
+            this.chart_.data.datasets = this.data_[this.index_].datasets;
+            this.chart_.options.plugins.title.text = this.data_[this.index_].title;
+            this.chart_.update();
+          }
+        }
+        next() {
+          this.index_++;
+          this.update();
+        }
+        prev() {
+          this.index_--;
+          this.update();
+        }
+        position(position) {
+          this.index_ = position;
+          this.update();
+        }
       }
 
       Chart.Tooltip.positioners.bottomPositioner = function (items) {
@@ -326,10 +359,8 @@
         link.click();
       }
 
-      function newCanvasContext2d(title, index) {
-        const carousel = new bootstrap.Carousel("#pCarouselChart");
+      function newCanvasContext2d() {
         const pCanvasList = document.getElementById("pCanvasList");
-        const div0 = document.createElement("div");
         const div1 = document.createElement("div");
         const div2 = document.createElement("div");
         const div3 = document.createElement("div");
@@ -338,7 +369,7 @@
         const downloadBtn = document.createElement("input");
         const prevBtn = document.createElement("input");
         const nextBtn = document.createElement("input");
-        div0.className = index == 0 ? "carousel-item active" : "carousel-item";
+        const resetBtn = document.createElement("input");
         div1.className = "d-block w-100";
         div2.className = "card";
         div3.className = "card-body";
@@ -349,41 +380,49 @@
         prevBtn.type = "button";
         prevBtn.value = "Anterior";
         prevBtn.addEventListener("click", () => {
-          carousel.prev();
+          g_chartUpdate.prev();
         });
 
         nextBtn.className = "btn btn-outline-primary col";
         nextBtn.type = "button";
         nextBtn.value = "Próximo";
         nextBtn.addEventListener("click", () => {
-          carousel.next();
+          g_chartUpdate.next();
+        });
+
+        resetBtn.className = "btn btn-primary col-md-auto";
+        resetBtn.type = "button";
+        resetBtn.value = "Reset Zoom";
+        resetBtn.addEventListener("click", () => {
+          g_chartUpdate.reset();
         });
 
         downloadBtn.className = "btn btn-primary col-md-auto";
         downloadBtn.type = "button";
         downloadBtn.value = "Download";
         downloadBtn.addEventListener("click", () => {
-          download_image(canvas, title);
+          download_image(canvas, g_chartUpdate.title());
         });
 
-        pCanvasList.appendChild(div0);
-        div0.appendChild(div1);
+        pCanvasList.appendChild(div1);
         div1.appendChild(div2);
         div2.appendChild(div3);
         div3.appendChild(canvas);
         div3.appendChild(divBtn);
         divBtn.appendChild(prevBtn);
+        divBtn.appendChild(resetBtn);
         divBtn.appendChild(downloadBtn);
         divBtn.appendChild(nextBtn);
         return canvas.getContext("2d");
       }
 
-      function createChart() {
-        g_sensor_data.forEach((bot_name) => {
-          g_sensor_data[bot_name].forEach((sensor, index) => {
+      function createDataset(sensor_data) {
+        let datasets = [];
+        sensor_data.forEach((bot_name) => {
+          sensor_data[bot_name].forEach((sensor, index) => {
             try {
               let data = [];
-              g_sensor_data[bot_name][sensor].forEach((value, index) => {
+              sensor_data[bot_name][sensor].forEach((value, index) => {
                 if (value.length) {
                   let line = g_default_sensor[index].chart;
                   data.push({
@@ -396,97 +435,108 @@
                 }
               });
               const title = bot_name + " - " + sensor;
-              const ctx = newCanvasContext2d(title, index);
-              try {
-                g_chart_list.push(
-                  new Chart(ctx, {
-                    data: {
-                      datasets: data,
-                    },
-                    options: {
-                      animation: false,
-                      responsive: true,
-                      scales: {
-                        y: {
-                          reverse: false,
-                          suggestedMin: 0,
-                          suggestedMax: 100,
-                        },
-                        x: {
-                          type: "time",
-                          min: g_min_date,
-                          max: g_max_date,
-                          time: {
-                            displayFormats: {
-                              day: "d MMM",
-                              hour: "d MMM, HH:mm",
-                              minute: "d MMM, HH:mm",
-                            },
-                          },
-                        },
-                      },
-                      interaction: {
-                        intersect: false,
-                        axis: "x",
-                        mode: "nearest",
-                      },
-                      plugins: {
-                        customCanvasBackgroundColor: {
-                          color: "rgba(248,248,248,1)",
-                        },
-                        tooltip: {
-                          position: "bottomPositioner",
-                        },
-                        title: {
-                          display: true,
-                          text: title,
-                        },
-                        zoom: {
-                          pan: {
-                            enabled: true,
-                            mode: "xy",
-                            overScaleMode: "xy",
-                          },
-                          zoom: {
-                            drag: {
-                              enabled: false,
-                              backgroundColor: "rgba(192,192,192,0.3)",
-                              modifierKey: "ctrl",
-                            },
-                            wheel: {
-                              enabled: false,
-                            },
-                            pinch: {
-                              enabled: false,
-                            },
-                            mode: "xy",
-                            overScaleMode: "xy",
-                          },
-                        },
-                        chartAreaBorder: {
-                          borderColor: "red",
-                          borderWidth: 1,
-                          borderDash: [10, 3],
-                          borderDashOffset: 5,
-                        },
-                      },
-                      onClick(e) {
-                        const chart = e.chart;
-                        const new_state = !chart.options.plugins.zoom.zoom.wheel.enabled;
-                        chart.options.plugins.zoom.zoom.wheel.enabled = new_state;
-                        chart.options.plugins.zoom.zoom.pinch.enabled = new_state;
-                        chart.options.plugins.zoom.zoom.drag.enabled = new_state;
-                        chart.options.plugins.zoom.pan.enabled = new_state;
-                        chart.update();
-                      },
-                    },
-                    plugins: [chartBackgroundColor, chartAreaBorder],
-                  })
-                );
-              } catch (error) {}
+              datasets.push({ datasets: data, title: title });
             } catch (error) {}
           });
         });
+        return datasets;
+      }
+
+      function createChart() {
+        let chart = {};
+        const ctx = newCanvasContext2d();
+        try {
+          chart = new Chart(ctx, {
+            data: {
+              datasets: [],
+            },
+            options: {
+              animation: false,
+              responsive: true,
+              scales: {
+                y: {
+                  reverse: false,
+                  suggestedMin: 0,
+                  suggestedMax: 100,
+                },
+                x: {
+                  type: "time",
+                  min: g_min_date,
+                  max: g_max_date,
+                  time: {
+                    displayFormats: {
+                      day: "d MMM",
+                      hour: "d MMM, HH:mm",
+                      minute: "d MMM, HH:mm",
+                    },
+                  },
+                },
+              },
+              interaction: {
+                intersect: false,
+                axis: "x",
+                mode: "nearest",
+              },
+              plugins: {
+                customCanvasBackgroundColor: {
+                  color: "rgba(248,248,248,1)",
+                },
+                tooltip: {
+                  position: "bottomPositioner",
+                },
+                title: {
+                  display: true,
+                  text: "Gráfico",
+                },
+                zoom: {
+                  pan: {
+                    enabled: true,
+                    mode: "xy",
+                    overScaleMode: "xy",
+                  },
+                  zoom: {
+                    drag: {
+                      enabled: false,
+                      backgroundColor: "rgba(192,192,192,0.3)",
+                      modifierKey: "ctrl",
+                    },
+                    wheel: {
+                      enabled: false,
+                    },
+                    pinch: {
+                      enabled: false,
+                    },
+                    mode: "xy",
+                    overScaleMode: "xy",
+                  },
+                },
+                chartAreaBorder: {
+                  borderColor: "red",
+                  borderWidth: 1,
+                  borderDash: [10, 3],
+                  borderDashOffset: 5,
+                },
+              },
+              onClick(e) {
+                const chart = e.chart;
+                const new_state = !chart.options.plugins.zoom.zoom.wheel.enabled;
+                chart.options.plugins.zoom.zoom.wheel.enabled = new_state;
+                chart.options.plugins.zoom.zoom.pinch.enabled = new_state;
+                chart.options.plugins.zoom.zoom.drag.enabled = new_state;
+                chart.options.plugins.zoom.pan.enabled = new_state;
+                chart.update();
+              },
+            },
+            plugins: [chartBackgroundColor, chartAreaBorder],
+          });
+        } catch (error) {}
+        return chart;
+      }
+
+      function resetChartView() {
+        const pDataInicial = document.getElementById("pDataInicial");
+        const pDataFinal = document.getElementById("pDataFinal");
+        g_chartUpdate.reset(pDataInicial.value, pDataFinal.value);
       }
 
       function createSelector() {
@@ -512,12 +562,8 @@
         input_start.className = "input-group mb-3";
         input_end.className = "input-group mb-3";
 
-        input_start.addEventListener("change", () => {
-          chartUpdate();
-        });
-        input_end.addEventListener("change", () => {
-          chartUpdate();
-        });
+        input_start.addEventListener("change", resetChartView);
+        input_end.addEventListener("change", resetChartView);
 
         pSelector.appendChild(label_start);
         label_start.appendChild(input_start);
@@ -541,8 +587,7 @@
         while (selector.hasChildNodes()) {
           selector.removeChild(selector.lastChild);
         }
-        g_sensor_data = [];
-        g_chart_list = [];
+        g_chartUpdate = null;
         g_max_date = undefined;
         g_min_date = undefined;
       }
@@ -665,6 +710,7 @@
       }
 
       function importData(imported) {
+        let sensor_data = [];
         const result = JSON.parse(imported);
         let filter = [];
         g_default_sensor.forEach((item) => filter.push(item.parse.key));
@@ -674,7 +720,7 @@
             try {
               const result = msg.parse(filter);
               result.values.forEach((value, index) => {
-                pushValue(result.author, result.sensor, index, {
+                pushValue(sensor_data, result.author, result.sensor, index, {
                   x: result.date,
                   y: value,
                 });
@@ -687,13 +733,13 @@
             }
           } catch (err) {}
         });
+        return sensor_data;
       }
 
       function processJson(imported) {
         resetElements();
-        importData(imported);
+        g_chartUpdate = new ChartUpdate(createDataset(importData(imported)), createChart());
         createSelector();
-        createChart();
       }
 
       function handleFiles(files) {
@@ -765,9 +811,7 @@
             </div>
           </div>
           <p></p>
-          <div id="pCarouselChart" class="carousel slide carousel-fade">
-            <div id="pCanvasList" class="carousel-inner"></div>
-          </div>
+          <div id="pCanvasList"></div>
           <p id="pEvents"></p>
         </div>
         <div id="calc1" class="container tab-pane fade">
