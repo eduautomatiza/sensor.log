@@ -219,10 +219,10 @@
         }
       }
 
-      function dateIsoString(a_date) {
+      function dateIsoString(date) {
         const offset = new Date().getTimezoneOffset() * 60 * 1000;
-        if (typeof a_date === "number") {
-          return new Date(a_date - offset).toISOString().split(".")[0];
+        if (typeof date === "number") {
+          return new Date(date - offset).toISOString().split(".")[0];
         } else {
           return "";
         }
@@ -512,7 +512,7 @@
         return chart;
       }
 
-      function createSelector(start_date, end_date) {
+      function createDateSelector(start_date, end_date) {
         const pSelector = document.getElementById("pSelector");
         const divSelector = document.createElement("div");
         const input_start = document.createElement("input");
@@ -652,46 +652,41 @@
         }
       }
 
-      function pushEvent(msg) {
-        try {
-          const text = msg.text();
-          const author = msg.author();
-          const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
+      function createEvents(event) {
+        const divEvents = document.getElementById("pEvents");
 
-          const event = document.getElementById("pEvents");
-          let pContainer;
-          if (event.childElementCount == 0) {
-            pContainer = document.createElement("p");
-            pContainer.className = "container";
-            pContainer.id = "pEventsContainer";
-            event.appendChild(pContainer);
+        const hEvent = document.createElement("h3");
+        hEvent.innerText = "Eventos";
+        divEvents.appendChild(hEvent);
 
-            const hEvent = document.createElement("h3");
-            hEvent.innerText = "Eventos";
-            pContainer.appendChild(hEvent);
-          } else {
-            pContainer = document.getElementById("pEventsContainer");
-          }
-          const div = document.createElement("div");
-          div.className = "container msg";
-          pContainer.appendChild(div);
+        event.forEach((msg) => {
+          try {
+            const text = msg.text();
+            const author = msg.author();
+            const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
 
-          const spanAuthor = document.createElement("span");
-          spanAuthor.className = "author-left";
-          spanAuthor.innerText = author;
-          div.appendChild(spanAuthor);
+            const divCard = document.createElement("div");
+            const divAuthor = document.createElement("div");
+            const divText = document.createElement("div");
+            const divDate = document.createElement("div");
 
-          div.appendChild(document.createElement("br"));
+            divCard.className = "card card-header mb-3";
 
-          const pText = document.createElement("p");
-          pText.innerText = text;
-          div.appendChild(pText);
+            divAuthor.className = "text-primary fw-bold";
+            divAuthor.innerText = author;
 
-          const spanDate = document.createElement("span");
-          spanDate.className = "time-right";
-          spanDate.innerText = date;
-          div.appendChild(spanDate);
-        } catch (err) {}
+            divText.className = "card-text";
+            divText.innerText = text;
+
+            divDate.className = "text-secondary fst-italic text-end";
+            divDate.innerText = date;
+
+            divEvents.appendChild(divCard);
+            divCard.appendChild(divAuthor);
+            divCard.appendChild(divText);
+            divCard.appendChild(divDate);
+          } catch (err) {}
+        });
       }
 
       class SensorValues {
@@ -704,7 +699,7 @@
           this.event = [];
           this.#import(imported);
         }
-        #push(bot_name, sensor, index, a_date, value) {
+        #push(bot_name, sensor, index, date, value) {
           if (!this.data.includes(bot_name)) {
             this.data.push(bot_name);
             this.data[bot_name] = [];
@@ -716,13 +711,13 @@
               this.data[bot_name][sensor].push([]);
             });
           }
-          this.data[bot_name][sensor][index].push({ x: a_date, y: value });
+          this.data[bot_name][sensor][index].push({ x: date, y: value });
 
-          if (typeof this.date.max !== "number" || a_date > this.date.max) {
-            this.date.max = a_date;
+          if (typeof this.date.max !== "number" || date > this.date.max) {
+            this.date.max = date;
           }
-          if (typeof this.date.min !== "number" || a_date < this.date.min) {
-            this.date.min = a_date;
+          if (typeof this.date.min !== "number" || date < this.date.min) {
+            this.date.min = date;
           }
         }
         #import(imported) {
@@ -752,10 +747,8 @@
         let navDisable = datasets.length < 2;
         let chart = createChart(navDisable);
         g_chartUpdate = new ChartUpdate(datasets, chart);
-        createSelector(sensor_values.date.min, sensor_values.date.max);
-        sensor_values.event.forEach((msg) => {
-          pushEvent(msg);
-        });
+        createDateSelector(sensor_values.date.min, sensor_values.date.max);
+        createEvents(sensor_values.event);
       }
 
       function handleFiles(files) {
@@ -794,24 +787,7 @@
       <!-- Tab panes -->
       <div class="tab-content">
         <div id="chart" class="container tab-pane fade show active">
-          <style>
-            .msg {
-              background-color: #f7f7f7;
-            }
-
-            .time-right {
-              float: right;
-              color: #aaa;
-            }
-
-            .author-left {
-              font-weight: bold;
-              float: left;
-              color: #07c3f2;
-            }
-          </style>
-          <p></p>
-          <div class="card">
+          <div class="card mb-3">
             <div class="card-body">
               <div class="mb-3">
                 <label for="pFileInput" class="form-label">Carregue um arquivo:</label>
@@ -826,9 +802,8 @@
               <div id="pSelector"></div>
             </div>
           </div>
-          <p></p>
-          <div id="pCanvasList"></div>
-          <p id="pEvents"></p>
+          <div id="pCanvasList" class="mb-3"></div>
+          <div id="pEvents" class="mb-3"></div>
         </div>
         <div id="calc1" class="container tab-pane fade">
           <fieldset class="form-group">
