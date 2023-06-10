@@ -423,7 +423,7 @@
         return datasets;
       }
 
-      function createChart(navDisable) {
+      function createChartPanel(navDisable) {
         let chart = {};
         const ctx = newCanvasContext2d(navDisable);
         try {
@@ -512,7 +512,7 @@
         return chart;
       }
 
-      function createDateSelector(start_date, end_date) {
+      function createDatePanel(start_date, end_date) {
         const pSelector = document.getElementById("pSelector");
         const divSelector = document.createElement("div");
         const input_start = document.createElement("input");
@@ -652,7 +652,7 @@
         }
       }
 
-      function createEvents(event) {
+      function createEventPanel(event) {
         const divEvents = document.getElementById("pEvents");
 
         const hEvent = document.createElement("h3");
@@ -745,10 +745,10 @@
         let sensor_values = new SensorValues(imported);
         let datasets = createDataset(sensor_values.data);
         let navDisable = datasets.length < 2;
-        let chart = createChart(navDisable);
+        let chart = createChartPanel(navDisable);
         g_chartUpdate = new ChartUpdate(datasets, chart);
-        createDateSelector(sensor_values.date.min, sensor_values.date.max);
-        createEvents(sensor_values.event);
+        createDatePanel(sensor_values.date.min, sensor_values.date.max);
+        createEventPanel(sensor_values.event);
       }
 
       function handleFiles(files) {
