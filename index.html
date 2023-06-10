@@ -331,7 +331,7 @@
       }
 
       function newCanvasContext2d(navDisable) {
-        const pCanvasList = document.getElementById("pCanvasList");
+        const divChartPanel = document.getElementById("divChartPanel");
         const div1 = document.createElement("div");
         const div2 = document.createElement("div");
         const div3 = document.createElement("div");
@@ -385,7 +385,7 @@
           download_image(canvas, g_chartUpdate.title());
         });
 
-        pCanvasList.appendChild(div1);
+        divChartPanel.appendChild(div1);
         div1.appendChild(div2);
         div2.appendChild(div3);
         div3.appendChild(canvas);
@@ -513,7 +513,6 @@
       }
 
       function createDatePanel(start_date, end_date) {
-        const pSelector = document.getElementById("pSelector");
         const divSelector = document.createElement("div");
         const input_start = document.createElement("input");
         const label_start = document.createElement("label");
@@ -553,24 +552,24 @@
 
         label_start.appendChild(input_start);
         label_end.appendChild(input_end);
-        pSelector.appendChild(divSelector);
+        divDatePanel.appendChild(divSelector);
         divSelector.appendChild(label_start);
         divSelector.appendChild(label_end);
         divSelector.appendChild(resetBtn);
       }
 
       function resetElements() {
-        const pCanvasList = document.getElementById("pCanvasList");
-        while (pCanvasList.hasChildNodes()) {
-          pCanvasList.removeChild(pCanvasList.lastChild);
+        const divChartPanel = document.getElementById("divChartPanel");
+        while (divChartPanel.hasChildNodes()) {
+          divChartPanel.removeChild(divChartPanel.lastChild);
         }
-        const event = document.getElementById("pEvents");
-        while (event.hasChildNodes()) {
-          event.removeChild(event.lastChild);
+        const divEventPanel = document.getElementById("divEventPanel");
+        while (divEventPanel.hasChildNodes()) {
+          divEventPanel.removeChild(divEventPanel.lastChild);
         }
-        const selector = document.getElementById("pSelector");
-        while (selector.hasChildNodes()) {
-          selector.removeChild(selector.lastChild);
+        const divDatePanel = document.getElementById("divDatePanel");
+        while (divDatePanel.hasChildNodes()) {
+          divDatePanel.removeChild(divDatePanel.lastChild);
         }
         g_chartUpdate = null;
       }
@@ -653,11 +652,11 @@
       }
 
       function createEventPanel(event) {
-        const divEvents = document.getElementById("pEvents");
+        const divEventPanel = document.getElementById("divEventPanel");
 
         const hEvent = document.createElement("h3");
         hEvent.innerText = "Eventos";
-        divEvents.appendChild(hEvent);
+        divEventPanel.appendChild(hEvent);
 
         event.forEach((msg) => {
           try {
@@ -681,7 +680,7 @@
             divDate.className = "text-secondary fst-italic text-end";
             divDate.innerText = date;
 
-            divEvents.appendChild(divCard);
+            divEventPanel.appendChild(divCard);
             divCard.appendChild(divAuthor);
             divCard.appendChild(divText);
             divCard.appendChild(divDate);
@@ -786,10 +785,10 @@
 
       <!-- Tab panes -->
       <div class="tab-content">
-        <div id="chart" class="container tab-pane fade show active">
+        <div class="container tab-pane fade show active">
           <div class="card mb-3">
             <div class="card-body">
-              <div class="mb-3">
+              <div class="form-group mb-3">
                 <label for="pFileInput" class="form-label">Carregue um arquivo:</label>
                 <input
                   type="file"
@@ -799,11 +798,11 @@
                   onchange="handleFiles(this.files)"
                 />
               </div>
-              <div id="pSelector"></div>
+              <div id="divDatePanel"></div>
             </div>
           </div>
-          <div id="pCanvasList" class="mb-3"></div>
-          <div id="pEvents" class="mb-3"></div>
+          <div id="divChartPanel" class="mb-3"></div>
+          <div id="divEventPanel" class="mb-3"></div>
         </div>
         <div id="calc1" class="container tab-pane fade">
           <fieldset class="form-group">
