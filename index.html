@@ -54,6 +54,11 @@
       integrity="sha256-Mr694q2aTwUcDLulItPTrQjIMjDiW+LexQCdFT/iubY="
       crossorigin="anonymous"
     ></script>
+    <style type="text/css">
+      body {
+        background-color: #bacacf !important;
+      } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+    </style>
     <script>
       var g_chartUpdate;
 
@@ -331,27 +336,23 @@
       }
 
       function newCanvasContext2d(navDisable) {
-        const divChartPanel = document.getElementById("divChartPanel");
-        const div1 = document.createElement("div");
-        const div2 = document.createElement("div");
-        const div3 = document.createElement("div");
+        const divPanel = document.createElement("div");
         const canvas = document.createElement("canvas");
         const divBtn = document.createElement("div");
         const downloadBtn = document.createElement("input");
         const prevBtn = document.createElement("input");
         const nextBtn = document.createElement("input");
         const resetBtn = document.createElement("input");
-        div1.className = "d-block w-100";
-        div2.className = "card";
-        div3.className = "card-body";
-        divBtn.className = "card-body row gap-2 justify-content-between";
+        divPanel.className = "vstack gap-2 mb-3";
+        canvas.className = "mb-3";
+        divBtn.className = "btn-group";
         divBtn.role = "group";
 
         if (navDisable) {
           prevBtn.disabled = true;
-          prevBtn.className = "btn btn-outline-secondary col";
+          prevBtn.className = "btn btn-outline-secondary col-auto";
         } else {
-          prevBtn.className = "btn btn-outline-primary col";
+          prevBtn.className = "btn btn-outline-primary col-auto";
         }
         prevBtn.type = "button";
         prevBtn.value = "Anterior";
@@ -361,9 +362,9 @@
 
         if (navDisable) {
           nextBtn.disabled = true;
-          nextBtn.className = "btn btn-outline-secondary col";
+          nextBtn.className = "btn btn-outline-secondary col-auto";
         } else {
-          nextBtn.className = "btn btn-outline-primary col";
+          nextBtn.className = "btn btn-outline-primary col-auto";
         }
         nextBtn.type = "button";
         nextBtn.value = "Próximo";
@@ -371,25 +372,23 @@
           g_chartUpdate.next();
         });
 
-        resetBtn.className = "btn btn-primary col-md-auto";
+        resetBtn.className = "btn btn-primary col-auto";
         resetBtn.type = "button";
         resetBtn.value = "Zoom Padrão";
         resetBtn.addEventListener("click", () => {
           g_chartUpdate.resetZoom();
         });
 
-        downloadBtn.className = "btn btn-primary col-md-auto";
+        downloadBtn.className = "btn btn-primary col-auto";
         downloadBtn.type = "button";
         downloadBtn.value = "Download";
         downloadBtn.addEventListener("click", () => {
           download_image(canvas, g_chartUpdate.title());
         });
 
-        divChartPanel.appendChild(div1);
-        div1.appendChild(div2);
-        div2.appendChild(div3);
-        div3.appendChild(canvas);
-        div3.appendChild(divBtn);
+        divChartPanel.appendChild(divPanel);
+        divPanel.appendChild(canvas);
+        divPanel.appendChild(divBtn);
         divBtn.appendChild(prevBtn);
         divBtn.appendChild(resetBtn);
         divBtn.appendChild(downloadBtn);
@@ -513,14 +512,14 @@
       }
 
       function createDatePanel(start_date, end_date) {
-        const divSelector = document.createElement("div");
+        const divPanel = document.createElement("div");
         const input_start = document.createElement("input");
         const label_start = document.createElement("label");
         const input_end = document.createElement("input");
         const label_end = document.createElement("label");
         const resetBtn = document.createElement("input");
 
-        divSelector.className = "vstack gap-2";
+        divPanel.className = "vstack gap-2 mb-3";
 
         label_start.className = "form-label";
         label_start.innerHTML = "Início:";
@@ -552,22 +551,19 @@
 
         label_start.appendChild(input_start);
         label_end.appendChild(input_end);
-        divDatePanel.appendChild(divSelector);
-        divSelector.appendChild(label_start);
-        divSelector.appendChild(label_end);
-        divSelector.appendChild(resetBtn);
+        divDatePanel.appendChild(divPanel);
+        divPanel.appendChild(label_start);
+        divPanel.appendChild(label_end);
+        divPanel.appendChild(resetBtn);
       }
 
       function resetElements() {
-        const divChartPanel = document.getElementById("divChartPanel");
         while (divChartPanel.hasChildNodes()) {
           divChartPanel.removeChild(divChartPanel.lastChild);
         }
-        const divEventPanel = document.getElementById("divEventPanel");
         while (divEventPanel.hasChildNodes()) {
           divEventPanel.removeChild(divEventPanel.lastChild);
         }
-        const divDatePanel = document.getElementById("divDatePanel");
         while (divDatePanel.hasChildNodes()) {
           divDatePanel.removeChild(divDatePanel.lastChild);
         }
@@ -652,8 +648,6 @@
       }
 
       function createEventPanel(event) {
-        const divEventPanel = document.getElementById("divEventPanel");
-
         const hEvent = document.createElement("h3");
         hEvent.innerText = "Eventos";
         divEventPanel.appendChild(hEvent);
@@ -669,7 +663,7 @@
             const divText = document.createElement("div");
             const divDate = document.createElement("div");
 
-            divCard.className = "card card-header mb-3";
+            divCard.className = "card card-body mb-3";
 
             divAuthor.className = "text-primary fw-bold";
             divAuthor.innerText = author;
@@ -763,7 +757,7 @@
       }
     </script>
     <div class="container-sm">
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <nav class="navbar navbar-expand-lg mb-3">
         <div class="text-center">
           <img src="sensor.log.png" width="80%" />
         </div>
@@ -771,13 +765,13 @@
           <p></p>
           <ul class="nav nav-pills" role="tablist">
             <li class="nav-item">
-              <a class="nav-link active" data-bs-toggle="tab" href="#chart">📊 Gráficos</a>
+              <a class="nav-link active" data-bs-toggle="tab" href="#chartTab">📊 Gráficos</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#calc1">📏 mm ➛ %</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#calc1Tab">📏 mm ➛ %</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#calc2">📏 % ➛ mm</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#calc2Tab">📏 % ➛ mm</a>
             </li>
           </ul>
         </div>
@@ -785,17 +779,15 @@
       <!-- Tab panes -->
       <div class="tab-content">
         <div id="chartTab" class="container tab-pane fade show active">
-          <div class="card mb-3">
-            <div class="card-body vstack gap-2">
-              <label class="form-label">
-                Carregue um arquivo:
-                <input type="file" class="form-control" accept=".json" onchange="handleFiles(this.files)" />
-              </label>
-              <div id="divDatePanel"></div>
-            </div>
+          <div class="vstack gap-2">
+            <label class="form-label">
+              Carregue um arquivo:
+              <input type="file" class="form-control" accept=".json" onchange="handleFiles(this.files)" />
+            </label>
+            <div id="divDatePanel"></div>
           </div>
-          <div id="divChartPanel" class="mb-3"></div>
-          <div id="divEventPanel" class="mb-3"></div>
+          <div id="divChartPanel"></div>
+          <div id="divEventPanel"></div>
         </div>
         <div id="calc1Tab" class="container tab-pane fade">
           <div class="vstack gap-2">
