@@ -782,79 +782,60 @@
           </ul>
         </div>
       </nav>
-
       <!-- Tab panes -->
       <div class="tab-content">
-        <div class="container tab-pane fade show active">
+        <div id="chartTab" class="container tab-pane fade show active">
           <div class="card mb-3">
-            <div class="card-body">
-              <div class="form-group mb-3">
-                <label for="pFileInput" class="form-label">Carregue um arquivo:</label>
-                <input
-                  type="file"
-                  class="form-control"
-                  id="pFileInput"
-                  accept=".json"
-                  onchange="handleFiles(this.files)"
-                />
-              </div>
+            <div class="card-body vstack gap-2">
+              <label class="form-label">
+                Carregue um arquivo:
+                <input type="file" class="form-control" accept=".json" onchange="handleFiles(this.files)" />
+              </label>
               <div id="divDatePanel"></div>
             </div>
           </div>
           <div id="divChartPanel" class="mb-3"></div>
           <div id="divEventPanel" class="mb-3"></div>
         </div>
-        <div id="calc1" class="container tab-pane fade">
-          <fieldset class="form-group">
-            <form id="mm2percent">
-              <div class="form-group mb-3">
-                <legend>Distância (mm)</legend>
-                <label for="mmMillimeter" class="form-label"> </label>
-                <input id="mmMillimeter" class="form-control" type="number" value="350" onchange="calculePercent()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Offset (mm)</legend>
-                <label for="mmOffset" class="form-label"> </label>
-                <input id="mmOffset" class="form-control" type="number" value="300" onchange="calculePercent()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Bottom (mm)</legend>
-                <label for="mmBottom" class="form-label"> </label>
-                <input id="mmBottom" class="form-control" type="number" value="1300" onchange="calculePercent()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Valor (%)</legend>
-                <label for="mmPercent" class="form-label"> </label>
-                <input id="mmPercent" class="form-control" value="95" readonly />
-              </div>
-            </form>
-          </fieldset>
+        <div id="calc1Tab" class="container tab-pane fade">
+          <div class="vstack gap-2">
+            <label class="form-label">
+              Distância (mm)
+              <input id="mmMillimeter" class="form-control" type="number" value="350" onchange="calculePercent()" />
+            </label>
+            <label class="form-label">
+              Offset (mm)
+              <input id="mmOffset" class="form-control" type="number" value="300" onchange="calculePercent()" />
+            </label>
+            <label class="form-label">
+              Bottom (mm)
+              <input id="mmBottom" class="form-control" type="number" value="1300" onchange="calculePercent()" />
+            </label>
+            <label class="form-label">
+              Valor (%)
+              <input id="mmPercent" class="form-control" value="95" readonly />
+            </label>
+          </div>
         </div>
-        <div id="calc2" class="container tab-pane fade">
-          <fieldset class="form-group">
-            <form id="percent2mm">
-              <div class="form-group mb-3">
-                <legend>Valor (%)</legend>
-                <label for="pPercent" class="form-label"> </label>
-                <input id="pPercent" class="form-control" type="number" value="95" onchange="calculeMillimeter()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Offset (mm)</legend>
-                <label for="pOffset" class="form-label"> </label>
-                <input id="pOffset" class="form-control" type="number" value="300" onchange="calculeMillimeter()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Bottom (mm)</legend>
-                <label for="pBottom" class="form-label"> </label>
-                <input id="pBottom" class="form-control" type="number" value="1300" onchange="calculeMillimeter()" />
-              </div>
-              <div class="form-group mb-3">
-                <legend>Distância (mm)</legend>
-                <label for="pMillimeter" class="form-label"> </label>
-                <input id="pMillimeter" class="form-control" value="350" readonly />
-              </div>
-            </form>
-          </fieldset>
+        <div id="calc2Tab" class="container tab-pane fade">
+          <div class="vstack gap-2">
+            <label class="form-label">
+              Valor (%)
+              <input id="pPercent" class="form-control" type="number" value="95" onchange="calculeMillimeter()" />
+            </label>
+            <label class="form-label"
+              >Offset (mm)
+              <input id="pOffset" class="form-control" type="number" value="300" onchange="calculeMillimeter()" />
+            </label>
+            <label class="form-label"
+              >Bottom (mm)
+              <input id="pBottom" class="form-control" type="number" value="1300" onchange="calculeMillimeter()" />
+            </label>
+            <label class="form-label"
+              >Distância (mm)
+              <input id="pMillimeter" class="form-control" value="350" readonly />
+            </label>
+          </div>
         </div>
       </div>
     </div>
