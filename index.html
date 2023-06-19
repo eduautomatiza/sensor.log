@@ -385,7 +385,7 @@
 
       const tooltipLabel = (tooltipItem) => {
         let label = tooltipItem.dataset.label + ": ";
-        if (tooltipItem.raw.text !== null) {
+        if (typeof tooltipItem.raw.text === "string") {
           return label + tooltipItem.raw.text;
         } else {
           return label + tooltipItem.formattedValue;
@@ -733,16 +733,17 @@
           return { author, sensor, date, values };
         }
         parseAsEvent() {
-          let author = this.author();
-          let date = this.date();
           let lines = this.text().split("\n");
-
           let first_line = lines[0];
-          let sensor = first_line.substring(0, first_line.lastIndexOf(":"));
-          if (sensor.length == 0) {
+          let end_of_name = first_line.lastIndexOf(":");
+          if (end_of_name < 0) {
             throw "Event does not have a sensor name!";
           }
-          return { author, sensor, date, text: lines[1].trim() };
+          let author = this.author();
+          let date = this.date();
+          let sensor = first_line.substring(0, end_of_name);
+          let text = first_line.substring(end_of_name + 1).trim() + " " + lines[1].trim();
+          return { author, sensor, date, text };
         }
       }
 
