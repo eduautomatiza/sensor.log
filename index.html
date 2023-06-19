@@ -123,6 +123,15 @@
 
       const g_default_sensor = [
         {
+          parse: { key: "Evento:" },
+          chart: {
+            hidden: false,
+            label: "Evento",
+            borderColor: "#32C8",
+            type: "scatter",
+          },
+        },
+        {
           parse: { key: "Nível:" },
           chart: {
             hidden: false,
@@ -374,6 +383,15 @@
         },
       };
 
+      const tooltipLabel = (tooltipItem) => {
+        let label = tooltipItem.dataset.label + ": ";
+        if (tooltipItem.raw.text !== null) {
+          return label + tooltipItem.raw.text;
+        } else {
+          return label + tooltipItem.formattedValue;
+        }
+      };
+
       function download_image(canvas, title) {
         const ctx = canvas.getContext("2d");
         ctx.save();
@@ -519,6 +537,10 @@
               plugins: {
                 tooltip: {
                   position: "bottomPositioner",
+                  backgroundColor: "rgba(127, 127, 127, 0.5)",
+                  callbacks: {
+                    label: tooltipLabel,
+                  },
                 },
                 title: {
                   display: true,
@@ -682,7 +704,7 @@
           if (line.startsWith("Nome:")) {
             return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
           } else {
-            throw "Message content error!";
+            throw "Content is not a sensor!";
           }
         }
         #sensorValue(line) {
@@ -692,7 +714,7 @@
             return this.#numberAt(line, line.lastIndexOf("(") + 1);
           }
         }
-        parse(filter) {
+        parseAsSensor(filter) {
           let textLines = this.text().split("\n");
           let author = this.author();
           let sensor = this.#sensorName(textLines[0]);
@@ -709,6 +731,18 @@
             });
           });
           return { author, sensor, date, values };
+        }
+        parseAsEvent() {
+          let author = this.author();
+          let date = this.date();
+          let lines = this.text().split("\n");
+
+          let first_line = lines[0];
+          let sensor = first_line.substring(0, first_line.lastIndexOf(":"));
+          if (sensor.length == 0) {
+            throw "Event does not have a sensor name!";
+          }
+          return { author, sensor, date, text: lines[1].trim() };
         }
       }
 
@@ -759,7 +793,7 @@
           this.event = [];
           this.#import(imported);
         }
-        #push(bot_name, sensor, index, date, value) {
+        #push(bot_name, sensor, index, date, value, text) {
           if (!this.data.includes(bot_name)) {
             this.data.push(bot_name);
             this.data[bot_name] = [];
@@ -771,8 +805,7 @@
               this.data[bot_name][sensor].push([]);
             });
           }
-          this.data[bot_name][sensor][index].push({ x: date, y: value });
-
+          this.data[bot_name][sensor][index].push({ x: date, y: value, text: text });
           if (typeof this.date.max !== "number" || date > this.date.max) {
             this.date.max = date;
           }
@@ -788,12 +821,16 @@
             try {
               const msg = new Message(message);
               try {
-                const result = msg.parse(filter);
+                const result = msg.parseAsSensor(filter);
                 result.values.forEach((value, index) => {
-                  this.#push(result.author, result.sensor, index, result.date, value);
+                  this.#push(result.author, result.sensor, index, result.date, value, null);
                 });
               } catch (err) {
-                this.event.push(msg);
+                try {
+                  this.event.push(msg);
+                  const result = msg.parseAsEvent();
+                  this.#push(result.author, result.sensor, 0, result.date, 0, result.text);
+                } catch (err) {}
               }
             } catch (err) {}
           });
