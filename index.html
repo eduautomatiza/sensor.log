@@ -129,6 +129,7 @@
             label: "Evento",
             borderColor: "#32C8",
             type: "scatter",
+            pointStyle: "star",
           },
         },
         {
@@ -480,10 +481,7 @@
                 if (value.length) {
                   let line = g_default_sensor[index].chart;
                   data.push({
-                    type: line.type,
-                    hidden: line.hidden,
-                    label: line.label,
-                    borderColor: line.borderColor,
+                    ...line,
                     data: value,
                   });
                 }
@@ -817,6 +815,7 @@
         #import(imported) {
           const result = JSON.parse(imported);
           let filter = [];
+          let index_of_event_dataset = g_default_sensor.findIndex((item) => item.parse.key == "Evento:");
           g_default_sensor.forEach((item) => filter.push(item.parse.key));
           result.messages.forEach((message) => {
             try {
@@ -829,8 +828,10 @@
               } catch (err) {
                 try {
                   this.event.push(msg);
-                  const result = msg.parseAsEvent();
-                  this.#push(result.author, result.sensor, 0, result.date, 0, result.text);
+                  if (index_of_event_dataset >= 0) {
+                    const result = msg.parseAsEvent();
+                    this.#push(result.author, result.sensor, index_of_event_dataset, result.date, 0, result.text);
+                  }
                 } catch (err) {}
               }
             } catch (err) {}
