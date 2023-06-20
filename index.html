@@ -128,8 +128,11 @@
             hidden: false,
             label: "Evento",
             borderColor: "#32C8",
-            type: "scatter",
-            pointStyle: "star",
+            borderWidth: 2,
+            borderRadius: 5,
+            borderSkipped: false,
+            type: "bar",
+            default_y_value: 100,
           },
         },
         {
@@ -792,7 +795,7 @@
           this.event = [];
           this.#import(imported);
         }
-        #push(bot_name, sensor, index, date, value, text) {
+        #push(bot_name, sensor, index, date, value) {
           if (!this.data.includes(bot_name)) {
             this.data.push(bot_name);
             this.data[bot_name] = [];
@@ -804,7 +807,15 @@
               this.data[bot_name][sensor].push([]);
             });
           }
-          this.data[bot_name][sensor][index].push({ x: date, y: value, text: text });
+          if (typeof value === "string") {
+            this.data[bot_name][sensor][index].push({
+              x: date,
+              y: g_default_sensor[index].chart.default_y_value,
+              text: value,
+            });
+          } else {
+            this.data[bot_name][sensor][index].push({ x: date, y: value });
+          }
           if (typeof this.date.max !== "number" || date > this.date.max) {
             this.date.max = date;
           }
@@ -823,14 +834,14 @@
               try {
                 const result = msg.parseAsSensor(filter);
                 result.values.forEach((value, index) => {
-                  this.#push(result.author, result.sensor, index, result.date, value, null);
+                  this.#push(result.author, result.sensor, index, result.date, value);
                 });
               } catch (err) {
                 try {
                   this.event.push(msg);
                   if (index_of_event_dataset >= 0) {
                     const result = msg.parseAsEvent();
-                    this.#push(result.author, result.sensor, index_of_event_dataset, result.date, 0, result.text);
+                    this.#push(result.author, result.sensor, index_of_event_dataset, result.date, result.text);
                   }
                 } catch (err) {}
               }
