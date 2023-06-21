@@ -127,12 +127,12 @@
           chart: {
             hidden: false,
             label: "Evento",
-            borderColor: "#32C8",
-            borderWidth: 2,
-            borderRadius: 5,
+            borderColor: "#7338",
+            borderWidth: 3,
+            borderRadius: 1000,
             borderSkipped: false,
             type: "bar",
-            default_y_value: 100,
+            default_y_value: [-10, 110],
           },
         },
         {
@@ -309,10 +309,12 @@
         #index_;
         #chart_;
         #data_;
-        constructor(data, chart) {
+        #date_;
+        constructor(data, chart, date) {
           this.index_ = 0;
           this.chart_ = chart;
           this.data_ = data;
+          this.dateUpdate(date);
           this.update();
         }
         title() {
@@ -322,10 +324,19 @@
           this.chart_.options.scales.x.min = x_min;
           this.chart_.options.scales.x.max = x_max;
           this.chart_.update();
-          this.resetZoom();
+          this.chart_.resetZoom();
+        }
+        windowZoom(delay) {
+          this.zoom(this.date_.max - delay, this.date_.max);
         }
         resetZoom() {
-          this.chart_.resetZoom();
+          this.zoom(this.date_.min, this.date_.max);
+        }
+        dateUpdate(date) {
+          this.date_ = date;
+          this.chart_.options.plugins.zoom.limits.x.min = date.min;
+          this.chart_.options.plugins.zoom.limits.x.max = date.max;
+          this.zoom(date.min, date.max);
         }
         update() {
           let length = this.length();
@@ -419,6 +430,7 @@
         const prevBtn = document.createElement("input");
         const nextBtn = document.createElement("input");
         const resetBtn = document.createElement("input");
+        const zoom48hBtn = document.createElement("input");
         div1.className = "d-block w-100";
         canvas.className = "card card-header mb-3";
         divBtn.className = "row gap-2 justify-content-between m-0";
@@ -455,6 +467,13 @@
           chartControl.resetZoom();
         });
 
+        zoom48hBtn.className = "btn btn-primary col-md-auto";
+        zoom48hBtn.type = "button";
+        zoom48hBtn.value = "48h";
+        zoom48hBtn.addEventListener("click", () => {
+          chartControl.windowZoom(2 * 86400000);
+        });
+
         downloadBtn.className = "btn btn-primary col-md-auto";
         downloadBtn.type = "button";
         downloadBtn.value = "Download";
@@ -468,6 +487,7 @@
         div1.appendChild(canvas);
         div1.appendChild(divBtn);
         divBtn.appendChild(prevBtn);
+        divBtn.appendChild(zoom48hBtn);
         divBtn.appendChild(resetBtn);
         divBtn.appendChild(downloadBtn);
         divBtn.appendChild(nextBtn);
@@ -615,14 +635,14 @@
         input_start.type = "datetime-local";
         input_start.value = dateIsoString(start_date);
         input_start.addEventListener("change", () => {
-          chartControl.zoom(input_start.value, input_end.value);
+          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
         });
 
         input_end.className = "form-control";
         input_end.type = "datetime-local";
         input_end.value = dateIsoString(end_date);
         input_end.addEventListener("change", () => {
-          chartControl.zoom(input_start.value, input_end.value);
+          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
         });
 
         resetBtn.className = "btn btn-outline-primary";
@@ -631,7 +651,7 @@
         resetBtn.addEventListener("click", () => {
           input_start.value = dateIsoString(start_date);
           input_end.value = dateIsoString(end_date);
-          chartControl.zoom(input_start.value, input_end.value);
+          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
         });
 
         label_start.appendChild(input_start);
@@ -856,8 +876,9 @@
         let datasets = createDataset(sensor_values.data);
         let navDisable = datasets.length < 2;
         let chart = createChartPanel(navDisable);
-        chartControl = new ChartControl(datasets, chart);
-        createDatePanel(sensor_values.date.min, sensor_values.date.max);
+        let date = { min: sensor_values.date.min, max: sensor_values.date.max };
+        chartControl = new ChartControl(datasets, chart, date);
+        createDatePanel(date.min, date.max);
         createEventPanel(sensor_values.event);
       }
 
