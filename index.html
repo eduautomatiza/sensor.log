@@ -309,7 +309,6 @@
         #index_;
         #chart_;
         #data_;
-        #date_;
         constructor(data, chart, date) {
           this.index_ = 0;
           this.chart_ = chart;
@@ -320,23 +319,31 @@
         title() {
           return this.chart_.options.plugins.title.text;
         }
-        zoom(x_min, x_max) {
-          this.chart_.options.scales.x.min = x_min;
-          this.chart_.options.scales.x.max = x_max;
-          this.chart_.update();
+        zoom(date) {
+          if (typeof date === "object") {
+            let x = this.chart_.options.plugins.zoom.limits.x;
+            this.chart_.options.scales.x.min = date.min < x.min ? x.min : date.min;
+            this.chart_.options.scales.x.max = date.max > x.max ? x.max : date.max;
+            console.log(this.chart_.options.scales.x.min, this.chart_.options.scales.x.max);
+            this.chart_.update();
+          }
           this.chart_.resetZoom();
         }
-        windowZoom(delay) {
-          this.zoom(this.date_.max - delay, this.date_.max);
+        windowZoom(windows_time) {
+          let x = this.chart_.options.plugins.zoom.limits.x;
+          this.zoom({
+            min: x.max - windows_time,
+            max: x.max,
+          });
         }
         resetZoom() {
-          this.zoom(this.date_.min, this.date_.max);
+          let x = this.chart_.options.plugins.zoom.limits.x;
+          this.zoom({ min: x.min, max: x.max });
         }
         dateUpdate(date) {
-          this.date_ = date;
-          this.chart_.options.plugins.zoom.limits.x.min = date.min;
-          this.chart_.options.plugins.zoom.limits.x.max = date.max;
-          this.zoom(date.min, date.max);
+          let x = this.chart_.options.plugins.zoom.limits.x;
+          Object.assign(x, { min: date.min, max: date.max });
+          this.resetZoom();
         }
         update() {
           let length = this.length();
