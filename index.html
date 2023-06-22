@@ -324,7 +324,6 @@
             let x = this.chart_.options.plugins.zoom.limits.x;
             this.chart_.options.scales.x.min = date.min < x.min ? x.min : date.min;
             this.chart_.options.scales.x.max = date.max > x.max ? x.max : date.max;
-            console.log(this.chart_.options.scales.x.min, this.chart_.options.scales.x.max);
             this.chart_.update();
           }
           this.chart_.resetZoom();
@@ -384,25 +383,6 @@
           xAlign: "center",
           yAlign: "bottom",
         };
-      };
-
-      const chartAreaBorder = {
-        id: "chartAreaBorder",
-        beforeDraw(chart, args, options) {
-          if (chart.options.plugins.zoom.zoom.wheel.enabled) {
-            const {
-              ctx,
-              chartArea: { left, top, width, height },
-            } = chart;
-            ctx.save();
-            ctx.strokeStyle = options.borderColor;
-            ctx.lineWidth = options.borderWidth;
-            ctx.setLineDash(options.borderDash || []);
-            ctx.lineDashOffset = options.borderDashOffset;
-            ctx.strokeRect(left, top, width, height);
-            ctx.restore();
-          }
-        },
       };
 
       const tooltipLabel = (tooltipItem) => {
@@ -582,42 +562,25 @@
                   pan: {
                     enabled: true,
                     mode: "xy",
-                    overScaleMode: "xy",
+                    modifierKey: "ctrl",
                   },
                   zoom: {
                     drag: {
-                      enabled: false,
+                      enabled: true,
                       backgroundColor: "rgba(192,192,192,0.3)",
-                      modifierKey: "ctrl",
                     },
                     wheel: {
-                      enabled: false,
+                      enabled: true,
+                      modifierKey: "shift",
                     },
                     pinch: {
-                      enabled: false,
+                      enabled: true,
                     },
                     mode: "xy",
-                    overScaleMode: "xy",
                   },
                 },
-                chartAreaBorder: {
-                  borderColor: "#a008",
-                  borderWidth: 1,
-                  borderDash: [10, 3],
-                  borderDashOffset: 5,
-                },
-              },
-              onClick(e) {
-                const chart = e.chart;
-                const new_state = !chart.options.plugins.zoom.zoom.wheel.enabled;
-                chart.options.plugins.zoom.zoom.wheel.enabled = new_state;
-                chart.options.plugins.zoom.zoom.pinch.enabled = new_state;
-                chart.options.plugins.zoom.zoom.drag.enabled = new_state;
-                chart.options.plugins.zoom.pan.enabled = new_state;
-                chart.update();
               },
             },
-            plugins: [chartAreaBorder],
           });
         } catch (error) {}
         return chart;
