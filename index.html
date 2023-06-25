@@ -11,6 +11,47 @@
       crossorigin="anonymous"
     />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <style>
+      .slider {
+        height: 100%;
+        width: 100%;
+        position: relative;
+      }
+      .slider .range-selected {
+        height: 100%;
+        left: 0%;
+        right: 0%;
+        position: absolute;
+        background: #8882;
+      }
+      .range-input {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+      .range-input input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: none;
+        pointer-events: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: col-resize;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        height: 100%;
+        width: 3px;
+        pointer-events: auto;
+        -webkit-appearance: none;
+      }
+      input[type="range"]::-moz-range-thumb {
+        height: 100%;
+        width: 3px;
+        pointer-events: auto;
+        -moz-appearance: none;
+      }
+    </style>
   </head>
 
   <body>
@@ -308,10 +349,26 @@
       class ChartControl {
         #index_;
         #chart_;
+        #miniChart_;
+        #range_;
         #data_;
-        constructor(data, chart, date) {
+        constructor(data, chartPanel, date) {
           this.index_ = 0;
-          this.chart_ = chart;
+          this.chart_ = chartPanel.chart;
+          this.miniChart_ = chartPanel.miniChart;
+          this.range_ = chartPanel.range;
+
+          this.range_.min = date.min;
+          this.range_.max = date.max;
+          this.range_.gap = 3 * 60 * 60 * 1000;
+          this.range_.step = 30 * 60 * 1000;
+          this.range_.left = date.min;
+          this.range_.right = date.max;
+
+          this.range_.onchange = (min, max) => {
+            this.zoom({ min, max });
+          };
+
           this.data_ = data;
           this.dateUpdate(date);
           this.update();
@@ -321,27 +378,28 @@
         }
         zoom(date) {
           if (typeof date === "object") {
-            let x = this.chart_.options.plugins.zoom.limits.x;
-            this.chart_.options.scales.x.min = date.min < x.min ? x.min : date.min;
-            this.chart_.options.scales.x.max = date.max > x.max ? x.max : date.max;
+            // let x = this.chart_.options.plugins.zoom.limits.x;
+            this.chart_.options.scales.x.min = date.min; // < x.min ? x.min : date.min;
+            this.chart_.options.scales.x.max = date.max; // > x.max ? x.max : date.max;
             this.chart_.update();
           }
           this.chart_.resetZoom();
         }
-        windowZoom(windows_time) {
-          let x = this.chart_.options.plugins.zoom.limits.x;
-          this.zoom({
-            min: x.max - windows_time,
-            max: x.max,
-          });
-        }
         resetZoom() {
-          let x = this.chart_.options.plugins.zoom.limits.x;
-          this.zoom({ min: x.min, max: x.max });
+          this.range_.left = this.range_.min;
+          this.range_.right = this.range_.max;
+          this.miniChart_.options.scales.x.min = this.range_.min; // < x.min ? x.min : date.min;
+          this.miniChart_.options.scales.x.max = this.range_.max; // > x.max ? x.max : date.max;
+          this.miniChart_.update();
+          this.miniChart_.resetZoom();
+          // let x = this.chart_.options.plugins.zoom.limits.x;
+          this.zoom({ min: this.range_.min, max: this.range_.max });
         }
         dateUpdate(date) {
-          let x = this.chart_.options.plugins.zoom.limits.x;
-          Object.assign(x, { min: date.min, max: date.max });
+          this.range_.min = date.min;
+          this.range_.max = date.max;
+          // let x = this.chart_.options.plugins.zoom.limits.x;
+          // Object.assign(x, { min: date.min, max: date.max });
           this.resetZoom();
         }
         update() {
@@ -352,6 +410,8 @@
             this.chart_.data.datasets = this.data_[this.index_].datasets;
             this.chart_.options.plugins.title.text = this.data_[this.index_].title;
             this.chart_.update();
+            this.miniChart_.data.datasets = this.data_[this.index_].datasets;
+            this.miniChart_.update();
           }
         }
         next() {
@@ -408,7 +468,7 @@
         link.click();
       }
 
-      function newCanvasContext2d(navDisable) {
+      function createCanvas(navDisable, miniChart) {
         const divChartPanel = document.getElementById("divChartPanel");
         const div1 = document.createElement("div");
         const canvas = document.createElement("canvas");
@@ -417,8 +477,9 @@
         const prevBtn = document.createElement("input");
         const nextBtn = document.createElement("input");
         const resetBtn = document.createElement("input");
-        const zoom48hBtn = document.createElement("input");
         div1.className = "d-block w-100";
+        miniChart.className = "card mb-3";
+        miniChart.style = "height:80px;";
         canvas.className = "card card-header mb-3";
         divBtn.className = "row gap-2 justify-content-between m-0";
         divBtn.role = "group";
@@ -454,31 +515,24 @@
           chartControl.resetZoom();
         });
 
-        zoom48hBtn.className = "btn btn-primary col-md-auto";
-        zoom48hBtn.type = "button";
-        zoom48hBtn.value = "48h";
-        zoom48hBtn.addEventListener("click", () => {
-          chartControl.windowZoom(2 * 86400000);
-        });
-
-        downloadBtn.className = "btn btn-primary col-md-auto";
+         downloadBtn.className = "btn btn-primary col-md-auto";
         downloadBtn.type = "button";
         downloadBtn.value = "Download";
         downloadBtn.addEventListener("click", () => {
-          let ctx = canvas.getContext("2d");
           download_image(canvas, chartControl.title());
           chartControl.update();
         });
 
         divChartPanel.appendChild(div1);
         div1.appendChild(canvas);
+        div1.appendChild(miniChart);
         div1.appendChild(divBtn);
         divBtn.appendChild(prevBtn);
-        divBtn.appendChild(zoom48hBtn);
         divBtn.appendChild(resetBtn);
         divBtn.appendChild(downloadBtn);
         divBtn.appendChild(nextBtn);
-        return canvas.getContext("2d");
+
+        return canvas;
       }
 
       function createDataset(sensor_data) {
@@ -504,86 +558,128 @@
         return datasets;
       }
 
-      function createChartPanel(navDisable) {
+      function createChart(canvas, options) {
+        let ctx = canvas.getContext("2d");
         let chart = {};
-        const ctx = newCanvasContext2d(navDisable);
         try {
           chart = new Chart(ctx, {
             data: {
               datasets: [],
             },
-            options: {
-              animation: false,
-              responsive: true,
-              scales: {
-                y: {
-                  reverse: false,
-                  suggestedMin: -10,
-                  suggestedMax: 110,
-                  ticks: {
-                    callback: (val) => {
-                      return val.toFixed();
-                    },
-                  },
-                },
-                x: {
-                  type: "time",
-                  time: {
-                    displayFormats: {
-                      day: "d MMM",
-                      hour: "d MMM, HH:mm",
-                      minute: "d MMM, HH:mm",
-                    },
-                  },
-                },
-              },
-              interaction: {
-                intersect: false,
-                axis: "x",
-                mode: "nearest",
-              },
-              plugins: {
-                tooltip: {
-                  position: "bottomPositioner",
-                  backgroundColor: "rgba(127, 127, 127, 0.5)",
-                  callbacks: {
-                    label: tooltipLabel,
-                  },
-                },
-                title: {
-                  display: true,
-                  text: "Gráfico",
-                },
-                zoom: {
-                  limits: {
-                    y: { min: "original", max: "original", minRange: 1 },
-                    x: { min: "original", max: "original", minRange: 1800000 },
-                  },
-                  pan: {
-                    enabled: true,
-                    mode: "xy",
-                    modifierKey: "ctrl",
-                  },
-                  zoom: {
-                    drag: {
-                      enabled: true,
-                      backgroundColor: "rgba(192,192,192,0.3)",
-                    },
-                    wheel: {
-                      enabled: true,
-                      modifierKey: "shift",
-                    },
-                    pinch: {
-                      enabled: true,
-                    },
-                    mode: "xy",
-                  },
-                },
-              },
-            },
+            options,
           });
         } catch (error) {}
         return chart;
+      }
+
+      function createChartPanel(navDisable) {
+        let range = new Range();
+        let canvas = createCanvas(navDisable, range.slider);
+        let miniChart = createChart(range.canvas, {
+          animation: false,
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              display: false,
+              suggestedMin: -10,
+              suggestedMax: 110,
+            },
+            x: {
+              display: false,
+              type: "time",
+            },
+          },
+          plugins: {
+            tooltip: {
+              enabled: false,
+            },
+            decimation: { algorithm: "min-max", enabled: true },
+            legend: {
+              display: false,
+            },
+            title: {
+              display: false,
+            },
+            zoom: {
+              limits: {
+                y: { min: "original", max: "original", minRange: 1 },
+                x: { min: "original", max: "original", minRange: 1800000 },
+              },
+            },
+          },
+        });
+
+        let chart = createChart(canvas, {
+          animation: false,
+          responsive: true,
+          scales: {
+            y: {
+              reverse: false,
+              suggestedMin: -10,
+              suggestedMax: 110,
+              ticks: {
+                callback: (val) => {
+                  return val.toFixed();
+                },
+              },
+            },
+            x: {
+              type: "time",
+              time: {
+                displayFormats: {
+                  day: "d MMM",
+                  hour: "d MMM, HH:mm",
+                  minute: "d MMM, HH:mm",
+                },
+              },
+            },
+          },
+          interaction: {
+            intersect: false,
+            axis: "x",
+            mode: "nearest",
+          },
+          plugins: {
+            tooltip: {
+              position: "bottomPositioner",
+              backgroundColor: "rgba(127, 127, 127, 0.5)",
+              callbacks: {
+                label: tooltipLabel,
+              },
+            },
+            title: {
+              display: true,
+              text: "Gráfico",
+            },
+            zoom: {
+              limits: {
+                y: { min: "original", max: "original", minRange: 1 },
+                x: { min: "original", max: "original", minRange: 1800000 },
+              },
+              pan: {
+                enabled: true,
+                mode: "xy",
+                modifierKey: "ctrl",
+              },
+              zoom: {
+                drag: {
+                  enabled: true,
+                  backgroundColor: "rgba(192,192,192,0.3)",
+                },
+                wheel: {
+                  enabled: true,
+                  modifierKey: "shift",
+                },
+                pinch: {
+                  enabled: true,
+                },
+                mode: "xy",
+              },
+            },
+          },
+        });
+        return { chart, miniChart, range };
       }
 
       function createDatePanel(start_date, end_date) {
@@ -840,14 +936,209 @@
         }
       }
 
+      class Range {
+        #element_;
+        #left_;
+        #right_;
+        #min_;
+        #max_;
+        #step_;
+        #gap_;
+        #callback_;
+
+        constructor() {
+          this.left_ = 40;
+          this.right_ = 60;
+          this.min_ = 0;
+          this.max_ = 100;
+          this.step_ = 1;
+          this.gap_ = 5;
+
+          let root = document.createElement("div");
+          let slider = document.createElement("div");
+          let range = document.createElement("div");
+          let canvas = document.createElement("canvas");
+          let left = document.createElement("input");
+          let right = document.createElement("input");
+          let shadowLeft = document.createElement("div");
+          let shadowRight = document.createElement("div");
+
+          slider.className = "slider";
+          range.className = "range-input";
+
+          left.type = "range";
+          left.step = this.step_;
+          left.min = this.min_;
+          left.max = this.max_;
+          left.value = this.left_;
+          left.addEventListener("input", (e) => {
+            this.left_ = e.target.valueAsNumber;
+            this.#updateLeftMove();
+          });
+
+          right.type = "range";
+          right.step = this.step_;
+          right.min = this.min_;
+          right.max = this.max_;
+          right.value = this.right_;
+          right.addEventListener("input", (e) => {
+            this.right_ = e.target.valueAsNumber;
+            this.#updateRightMove();
+          });
+
+          shadowLeft.className = "range-selected";
+          shadowRight.className = "range-selected";
+          canvas.className = "range-input";
+
+          root.appendChild(slider);
+          slider.appendChild(range);
+          range.appendChild(canvas);
+          range.appendChild(shadowLeft);
+          range.appendChild(shadowRight);
+          range.appendChild(left);
+          range.appendChild(right);
+
+          this.element_ = {
+            root,
+            slider,
+            range,
+            canvas,
+            left,
+            right,
+            shadowLeft,
+            shadowRight,
+          };
+
+          this.#updateSlider();
+        }
+
+        #updateSlider() {
+          let start_bar = ((this.left_ - this.min_) / (this.max_ - this.min_)) * 100;
+          let end_bar = ((this.right_ - this.min_) / (this.max_ - this.min_)) * 100;
+
+          this.element_.shadowLeft.style.right = 100 - start_bar + "%";
+          this.element_.shadowRight.style.left = end_bar + "%";
+
+          if (typeof this.#callback_ === "function") {
+            this.#callback_(this.left_, this.right_);
+          }
+        }
+
+        #updateLeftMove() {
+          if (this.right_ - this.left_ < this.gap_) {
+            if (this.right_ < this.max_) {
+              this.right_ = this.left_ + this.gap_;
+            }
+            if (this.right_ >= this.max_) {
+              this.right_ = this.max_;
+              this.left_ = this.right_ - this.gap_;
+              this.element_.left.value = this.left_;
+            }
+            this.element_.right.value = this.right_;
+          }
+          this.#updateSlider();
+        }
+
+        #updateRightMove() {
+          if (this.right_ - this.left_ < this.gap_) {
+            if (this.left_ > this.min_) {
+              this.left_ = this.right_ - this.gap_;
+            }
+            if (this.left_ <= this.min_) {
+              this.left_ = this.min_;
+              this.right_ = this.left_ + this.gap_;
+              this.element_.right.value = this.right_;
+            }
+            this.element_.left.value = this.left_;
+          }
+          this.#updateSlider();
+        }
+
+        set onchange(callback) {
+          this.#callback_ = callback;
+        }
+
+        get slider() {
+          return this.element_.root;
+        }
+
+        get canvas() {
+          return this.element_.canvas;
+        }
+
+        get left() {
+          return this.left_;
+        }
+
+        get right() {
+          return this.right_;
+        }
+
+        get min() {
+          return this.min_;
+        }
+
+        get max() {
+          return this.max_;
+        }
+
+        get step() {
+          return this.step_;
+        }
+
+        get gap() {
+          return this.gap_;
+        }
+
+        set left(value) {
+          this.left_ = value;
+          this.element_.left.value = value;
+          this.#updateLeftMove();
+        }
+
+        set right(value) {
+          this.right_ = value;
+          this.element_.right.value = value;
+          this.#updateRightMove();
+        }
+
+        set min(value) {
+          this.min_ = value;
+          this.element_.left.min = value;
+          this.element_.right.min = value;
+          this.#updateLeftMove();
+          this.#updateRightMove();
+        }
+
+        set max(value) {
+          this.max_ = value;
+          this.element_.left.max = value;
+          this.element_.right.max = value;
+          this.#updateLeftMove();
+          this.#updateRightMove();
+        }
+
+        set step(value) {
+          this.step_ = value;
+          this.element_.left.step = value;
+          this.element_.right.step = value;
+          this.#updateLeftMove();
+          this.#updateRightMove();
+        }
+
+        set gap(value) {
+          this.gap_ = value;
+        }
+      }
+
       function processJson(imported) {
         resetElements();
         let sensor_values = new SensorValues(imported);
         let datasets = createDataset(sensor_values.data);
         let navDisable = datasets.length < 2;
-        let chart = createChartPanel(navDisable);
+        let chartPanel = createChartPanel(navDisable);
         let date = { min: sensor_values.date.min, max: sensor_values.date.max };
-        chartControl = new ChartControl(datasets, chart, date);
+        chartControl = new ChartControl(datasets, chartPanel, date);
         createDatePanel(date.min, date.max);
         createEventPanel(sensor_values.event);
       }
