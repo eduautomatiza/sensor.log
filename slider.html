@@ -15,15 +15,7 @@
         left: 0%;
         right: 0%;
         position: absolute;
-        background: #8888;
-      }
-      .slider .range-selected-center {
-        height: 100%;
-        left: 0%;
-        right: 0%;
-        position: absolute;
-        background: #fff0;
-        cursor: move;
+        background: #ddd8;
       }
       .range-input {
         position: absolute;
@@ -56,98 +48,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   </head>
   <body>
-    <div>
-      <div class="slider" id="slider">
-        <div class="range-input">
-          <div class="range-selected" id="range-left-selected"></div>
-          <div class="range-selected-center" id="range-center-selected"></div>
-          <div class="range-selected" id="range-right-selected"></div>
-          <input type="range" id="range-left" />
-          <input type="range" id="range-right" />
-        </div>
-      </div>
-    </div>
+    <div id="test123"></div>
     <script>
-      const left = document.getElementById("range-left");
-      const right = document.getElementById("range-right");
-      const selectedLeft = document.getElementById("range-left-selected");
-      const selectedCenter = document.getElementById("range-center-selected");
-      const selectedRight = document.getElementById("range-right-selected");
-      const slider = document.getElementById("slider");
-      var rangeValues = {
-        left: -500,
-        right: 500,
-        min: -1000,
-        max: 1000,
-        step: 1,
-        gap: 100,
-      };
+      class Range {
+        #element_;
+        #left_;
+        #right_;
+        #min_;
+        #max_;
+        #step_;
+        #gap_;
 
-      function setValue(range) {
-        left.step = range.step;
-        left.min = range.min;
-        left.max = range.max;
-        left.value = range.left;
+        constructor(divMiniMap) {
+          this.left_ = 40;
+          this.right_ = 60;
+          this.min_ = 0;
+          this.max_ = 100;
+          this.step_ = 1;
+          this.gap_ = 5;
 
-        right.step = range.step;
-        right.min = range.min;
-        right.max = range.max;
-        right.value = range.right;
+          let slider = document.createElement("div");
+          let range = document.createElement("div");
+          this.element_ = {
+            left: document.createElement("input"),
+            right: document.createElement("input"),
+            shadowLeft: document.createElement("div"),
+            shadowRight: document.createElement("div"),
+          };
+
+          slider.className = "slider";
+          range.className = "range-input";
+
+          this.element_.left.type = "range";
+          this.element_.left.step = this.step_;
+          this.element_.left.min = this.min_;
+          this.element_.left.max = this.max_;
+          this.element_.left.value = this.left_;
+          this.element_.left.addEventListener("input", (e) => {
+            this.left_ = e.target.valueAsNumber;
+            this.updateLeftMove();
+          });
+
+          this.element_.right.type = "range";
+          this.element_.right.step = this.step_;
+          this.element_.right.min = this.min_;
+          this.element_.right.max = this.max_;
+          this.element_.right.value = this.right_;
+          this.element_.right.addEventListener("input", (e) => {
+            this.right_ = e.target.valueAsNumber;
+            this.updateRightMove();
+          });
+
+          this.element_.shadowLeft.className = "range-selected";
+          this.element_.shadowRight.className = "range-selected";
+
+          divMiniMap.appendChild(slider);
+          slider.appendChild(range);
+          range.appendChild(this.element_.left);
+          range.appendChild(this.element_.right);
+          range.appendChild(this.element_.shadowLeft);
+          range.appendChild(this.element_.shadowRight);
+
+          this.updateSlider();
+        }
+
+        updateSlider() {
+          let start_bar = ((this.left_ - this.min_) / (this.max_ - this.min_)) * 100;
+          let end_bar = ((this.right_ - this.min_) / (this.max_ - this.min_)) * 100;
+
+          this.element_.shadowLeft.style.right = 100 - start_bar + "%";
+          this.element_.shadowRight.style.left = end_bar + "%";
+        }
+
+        updateLeftMove() {
+          if (this.right_ - this.left_ < this.gap_) {
+            if (this.right_ < this.max_) {
+              this.right_ = this.left_ + this.gap_;
+            }
+            if (this.right_ >= this.max_) {
+              this.right_ = this.max_;
+              this.left_ = this.right_ - this.gap_;
+              this.element_.left.value = this.left_;
+            }
+            this.element_.right.value = this.right_;
+          }
+          this.updateSlider();
+        }
+
+        updateRightMove() {
+          if (this.right_ - this.left_ < this.gap_) {
+            if (this.left_ > this.min_) {
+              this.left_ = this.right_ - this.gap_;
+            }
+            if (this.left_ <= this.min_) {
+              this.left_ = this.min_;
+              this.right_ = this.left_ + this.gap_;
+              this.element_.right.value = this.right_;
+            }
+            this.element_.left.value = this.left_;
+          }
+          this.updateSlider();
+        }
       }
 
-      setValue(rangeValues);
-      updateSlider();
-
-      function updateSlider() {
-        let start_bar = ((rangeValues.left - rangeValues.min) / (rangeValues.max - rangeValues.min)) * 100;
-        let end_bar = ((rangeValues.right - rangeValues.min) / (rangeValues.max - rangeValues.min)) * 100;
-        console.log(start_bar, end_bar, rangeValues.left, rangeValues.right);
-
-        selectedLeft.style.right = 100 - start_bar + "%";
-        selectedRight.style.left = end_bar + "%";
-        selectedCenter.style.left = start_bar + "%";
-        selectedCenter.style.right = 100 - end_bar + "%";
-      }
-
-      selectedCenter.addEventListener("mousedown", (event) => {
-        console.log("mousedown", event, slider);
-      });
-
-      selectedCenter.addEventListener("mousemove", (event) => {
-        console.log("mousemove", event, slider);
-      });
-
-      left.addEventListener("input", (e) => {
-        rangeValues.left = e.target.valueAsNumber;
-        if (rangeValues.right - rangeValues.left < rangeValues.gap) {
-          if (rangeValues.right < rangeValues.max) {
-            rangeValues.right = rangeValues.left + rangeValues.gap;
-          }
-          if (rangeValues.right >= rangeValues.max) {
-            rangeValues.right = rangeValues.max;
-            rangeValues.left = rangeValues.right - rangeValues.gap;
-            left.value = rangeValues.left;
-          }
-          right.value = rangeValues.right;
-        }
-        updateSlider();
-      });
-
-      right.addEventListener("input", (e) => {
-        rangeValues.right = e.target.valueAsNumber;
-        if (rangeValues.right - rangeValues.left < rangeValues.gap) {
-          if (rangeValues.left > rangeValues.min) {
-            rangeValues.left = rangeValues.right - rangeValues.gap;
-          }
-          if (rangeValues.left <= rangeValues.min) {
-            rangeValues.left = rangeValues.min;
-            rangeValues.right = rangeValues.left + rangeValues.gap;
-            right.value = rangeValues.right;
-          }
-          left.value = rangeValues.left;
-        }
-        updateSlider();
-      });
+      new Range(document.getElementById("test123"));
     </script>
   </body>
 </html>
