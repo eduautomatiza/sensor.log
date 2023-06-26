@@ -515,7 +515,7 @@
           chartControl.resetZoom();
         });
 
-         downloadBtn.className = "btn btn-primary col-md-auto";
+        downloadBtn.className = "btn btn-primary col-md-auto";
         downloadBtn.type = "button";
         downloadBtn.value = "Download";
         downloadBtn.addEventListener("click", () => {
@@ -958,10 +958,10 @@
           let slider = document.createElement("div");
           let range = document.createElement("div");
           let canvas = document.createElement("canvas");
-          let left = document.createElement("input");
-          let right = document.createElement("input");
           let shadowLeft = document.createElement("div");
           let shadowRight = document.createElement("div");
+          let left = document.createElement("input");
+          let right = document.createElement("input");
 
           slider.className = "slider";
           range.className = "range-input";
@@ -991,8 +991,8 @@
           canvas.className = "range-input";
 
           root.appendChild(slider);
+          slider.appendChild(canvas);
           slider.appendChild(range);
-          range.appendChild(canvas);
           range.appendChild(shadowLeft);
           range.appendChild(shadowRight);
           range.appendChild(left);
