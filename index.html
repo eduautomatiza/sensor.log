@@ -1,92 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-bs-theme="auto">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sensor.log</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sensor.log</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
-    <link rel="icon" type="image/x-icon" href="favicon.ico" />
-    <style>
-      .slider {
-        height: 100%;
-        width: 100%;
-        position: relative;
-      }
-      .slider .range-selected {
-        height: 100%;
-        left: 0%;
-        right: 0%;
-        position: absolute;
-        background: #8882;
-      }
-      .range-input {
-        position: absolute;
-        height: 100%;
-        width: 100%;
-      }
-      .range-input input {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: none;
-        pointer-events: none;
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        cursor: col-resize;
-      }
-      input[type="range"]::-webkit-slider-thumb {
-        height: 100%;
-        width: 3px;
-        pointer-events: auto;
-        -webkit-appearance: none;
-      }
-      input[type="range"]::-moz-range-thumb {
-        height: 100%;
-        width: 3px;
-        pointer-events: auto;
-        -moz-appearance: none;
-      }
-    </style>
-  </head>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <style>
+    .slider {
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+    .slider .range-selected {
+      height: 100%;
+      left: 0%;
+      right: 0%;
+      position: absolute;
+      background: #8882;
+    }
+    .range-input {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+    }
+    .range-input input {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: none;
+      pointer-events: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      cursor: col-resize;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      height: 100%;
+      width: 3px;
+      pointer-events: auto;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-moz-range-thumb {
+      height: 100%;
+      width: 3px;
+      pointer-events: auto;
+      -moz-appearance: none;
+    }
+  </style>
+</head>
 
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
-      <symbol id="check2" viewBox="0 0 16 16">
-        <path
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+    <symbol id="check2" viewBox="0 0 16 16">
+      <path
           d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
         ></path>
-      </symbol>
-      <symbol id="circle-half" viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path>
-      </symbol>
-      <symbol id="moon-stars-fill" viewBox="0 0 16 16">
-        <path
+    </symbol>
+    <symbol id="circle-half" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"></path>
+    </symbol>
+    <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+      <path
           d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"
         ></path>
-        <path
+      <path
           d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"
         ></path>
-      </symbol>
-      <symbol id="sun-fill" viewBox="0 0 16 16">
-        <path
+    </symbol>
+    <symbol id="sun-fill" viewBox="0 0 16 16">
+      <path
           d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"
         ></path>
-      </symbol>
-      <symbol id="download" viewBox="0 0 16 16">
-        <path
+    </symbol>
+    <symbol id="download" viewBox="0 0 16 16">
+      <path
           d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"
         />
-        <path
+      <path
           d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"
         />
-      </symbol>
-      <symbol id="zoom-in" viewBox="0 0 16 16">
-        <path
+    </symbol>
+    <symbol id="zoom-in" viewBox="0 0 16 16">
+      <path
           fill-rule="evenodd"
           d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
         />
@@ -97,41 +97,41 @@
           fill-rule="evenodd"
           d="M6.5 3a.5.5 0 0 1 .5.5V6h2.5a.5.5 0 0 1 0 1H7v2.5a.5.5 0 0 1-1 0V7H3.5a.5.5 0 0 1 0-1H6V3.5a.5.5 0 0 1 .5-.5z"
         />
-      </symbol>
-      <symbol id="zoom-out" viewBox="0 0 16 16">
-        <path
+    </symbol>
+    <symbol id="zoom-out" viewBox="0 0 16 16">
+      <path
           fill-rule="evenodd"
           d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
         />
         <path
           d="M10.344 11.742c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1 6.538 6.538 0 0 1-1.398 1.4z"
         />
-        <path fill-rule="evenodd" d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
-      </symbol>
-      <symbol id="chevron-left" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M3 6.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z" />
+    </symbol>
+    <symbol id="chevron-left" viewBox="0 0 16 16">
         <path
           fill-rule="evenodd"
           d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"
         />
-      </symbol>
-      <symbol id="chevron-right" viewBox="0 0 16 16">
+    </symbol>
+    <symbol id="chevron-right" viewBox="0 0 16 16">
         <path
           fill-rule="evenodd"
           d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
         />
-      </symbol>
-      <symbol id="graph-up" viewBox="0 0 16 16">
+    </symbol>
+    <symbol id="graph-up" viewBox="0 0 16 16">
         <path
           fill-rule="evenodd"
           d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"
         />
-      </symbol>
-    </svg>
+    </symbol>
+  </svg>
 
-    <script src="color-modes.js" crossorigin="anonymous"></script>
+  <script src="color-modes.js" crossorigin="anonymous"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"
     ></script>
     <script
@@ -159,1012 +159,1029 @@
       integrity="sha256-Mr694q2aTwUcDLulItPTrQjIMjDiW+LexQCdFT/iubY="
       crossorigin="anonymous"
     ></script>
-    <script>
-      var chartControl;
+  <script>
+    var chartControl;
+    var actualTheme;
 
-      const g_default_sensor = [
-        {
-          parse: { key: "Evento:" },
-          chart: {
-            hidden: false,
-            label: "Evento",
-            borderColor: "#7338",
-            borderWidth: 3,
-            borderRadius: 1000,
-            borderSkipped: false,
-            type: "bar",
-            default_y_value: [-10, 110],
-          },
-        },
-        {
-          parse: { key: "Nível:" },
-          chart: {
-            hidden: false,
-            label: "Nível(%)",
-            borderColor: "#37C8",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "Dist₍₀₎:" },
-          chart: {
-            hidden: true,
-            label: "Dist₍₀₎(mm)",
-            borderColor: "#0378",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "Dist₍₋₁₎:" },
-          chart: {
-            hidden: true,
-            label: "Dist₍₋₁₎(mm)",
-            borderColor: "#7CF8",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "Dist₍₋₂₎:" },
-          chart: {
-            hidden: true,
-            label: "Dist₍₋₂₎(mm)",
-            borderColor: "#F738",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "Δd/Δt₍₋₁₎:" },
-          chart: {
-            hidden: true,
-            label: "Δd/Δt₍₋₁₎(mm/h)",
-            borderColor: "#C738",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "Δd/Δt₍₋₂₎:" },
-          chart: {
-            hidden: true,
-            label: "Δd/Δt₍₋₂₎(mm/h)",
-            borderColor: "#FC78",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "T0:" },
-          chart: {
-            hidden: true,
-            label: "T0(°C)",
-            borderColor: "#37F8",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "T1:" },
-          chart: {
-            hidden: true,
-            label: "T1(°C)",
-            borderColor: "#7778",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "V0:" },
-          chart: {
-            hidden: true,
-            label: "V0(mV)",
-            borderColor: "#c008",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "V1:" },
-          chart: {
-            hidden: true,
-            label: "V1(mV)",
-            borderColor: "#7008",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "SNR:" },
-          chart: {
-            hidden: true,
-            label: "SNR(dB)",
-            borderColor: "#0c08",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "RSSI:" },
-          chart: {
-            hidden: true,
-            label: "RSSI(dB)",
-            borderColor: "#0708",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "SNR(gw):" },
-          chart: {
-            hidden: true,
-            label: "SNR(gw)(dB)",
-            borderColor: "#0cc8",
-            type: "line",
-          },
-        },
-        {
-          parse: { key: "RSSI(gw):" },
-          chart: {
-            hidden: true,
-            label: "RSSI(gw)(dB)",
-            borderColor: "#c0c8",
-            type: "line",
-          },
-        },
-      ];
-
-      function calculePercent(val) {
-        try {
-          const mm_htmlMillimeter = document.getElementById("mmMillimeter");
-          const mm_htmlOffset = document.getElementById("mmOffset");
-          const mm_htmlBottom = document.getElementById("mmBottom");
-          const mm_htmlPercent = document.getElementById("mmPercent");
-
-          let mm = Number(mm_htmlMillimeter.value);
-          let offset = Number(mm_htmlOffset.value);
-          let bottom = Number(mm_htmlBottom.value);
-          let percent = (1 - (mm - offset) / (bottom - offset)) * 100;
-          mm_htmlPercent.value = percent.toFixed(1);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      function calculeMillimeter(val) {
-        try {
-          const p_htmlMillimeter = document.getElementById("pMillimeter");
-          const p_htmlOffset = document.getElementById("pOffset");
-          const p_htmlBottom = document.getElementById("pBottom");
-          const p_htmlPercent = document.getElementById("pPercent");
-
-          let percent = Number(p_htmlPercent.value);
-          let offset = Number(p_htmlOffset.value);
-          let bottom = Number(p_htmlBottom.value);
-          let mm = (1 - percent / 100) * (bottom - offset) + offset;
-          p_htmlMillimeter.value = mm.toFixed(0);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      function dateIsoString(date) {
-        const offset = new Date().getTimezoneOffset() * 60 * 1000;
-        if (typeof date === "number") {
-          return new Date(date - offset).toISOString().split(".")[0];
-        } else {
-          return "";
-        }
-      }
-
-      class ChartControl {
-        #index_;
-        #chart_;
-        #miniChart_;
-        #range_;
-        #data_;
-        constructor(data, chartPanel, date) {
-          this.index_ = 0;
-          this.chart_ = chartPanel.chart;
-          this.miniChart_ = chartPanel.miniChart;
-          this.range_ = chartPanel.range;
-
-          this.range_.min = date.min;
-          this.range_.max = date.max;
-          this.range_.gap = 3 * 60 * 60 * 1000;
-          this.range_.step = 30 * 60 * 1000;
-          this.range_.left = date.min;
-          this.range_.right = date.max;
-
-          this.range_.onchange = (min, max) => {
-            this.zoom({ min, max });
-          };
-
-          this.data_ = data;
-          this.dateUpdate(date);
-          this.update();
-        }
-        title() {
-          return this.chart_.options.plugins.title.text;
-        }
-        zoom(date) {
-          if (typeof date === "object") {
-            // let x = this.chart_.options.plugins.zoom.limits.x;
-            this.chart_.options.scales.x.min = date.min; // < x.min ? x.min : date.min;
-            this.chart_.options.scales.x.max = date.max; // > x.max ? x.max : date.max;
-            this.chart_.update();
+    window.addEventListener("load", (event) => {
+      document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
+        element.addEventListener("click", (value) => {
+          let nextTheme = document.documentElement.getAttribute("data-bs-theme");
+          if (actualTheme != nextTheme) {
+            actualTheme = nextTheme;
+            chartControl.setTheme(actualTheme);
           }
-          this.chart_.resetZoom();
-        }
-        resetZoom() {
-          this.range_.left = this.range_.min;
-          this.range_.right = this.range_.max;
-          this.miniChart_.options.scales.x.min = this.range_.min; // < x.min ? x.min : date.min;
-          this.miniChart_.options.scales.x.max = this.range_.max; // > x.max ? x.max : date.max;
-          this.miniChart_.update();
-          this.miniChart_.resetZoom();
-          // let x = this.chart_.options.plugins.zoom.limits.x;
-          this.zoom({ min: this.range_.min, max: this.range_.max });
-        }
-        dateUpdate(date) {
-          this.range_.min = date.min;
-          this.range_.max = date.max;
-          // let x = this.chart_.options.plugins.zoom.limits.x;
-          // Object.assign(x, { min: date.min, max: date.max });
-          this.resetZoom();
-        }
-        update() {
-          let length = this.length();
-          if (length) {
-            this.index_ += length;
-            this.index_ %= length;
-            this.chart_.data.datasets = this.data_[this.index_].datasets;
-            this.chart_.options.plugins.title.text = this.data_[this.index_].title;
-            this.chart_.update();
-            this.miniChart_.data.datasets = this.data_[this.index_].datasets;
-            this.miniChart_.update();
-          }
-        }
-        next() {
-          this.index_++;
-          this.update();
-        }
-        prev() {
-          this.index_--;
-          this.update();
-        }
-        position(position) {
-          this.index_ = position;
-          this.update();
-        }
-        length() {
-          return this.data_.length;
-        }
-      }
+        });
+      })
+    });
 
-      Chart.Tooltip.positioners.bottomPositioner = function (items) {
-        const pos = Chart.Tooltip.positioners.average(items);
-        if (pos === false) {
-          return false;
-        }
-        const chart = this.chart;
-        return {
-          x: pos.x,
-          y: chart.chartArea.bottom,
-          xAlign: "center",
-          yAlign: "bottom",
+
+    const g_default_sensor = [
+      {
+        parse: { key: "Evento:" },
+        chart: {
+          hidden: false,
+          label: "Evento",
+          borderColor: () => actualTheme == "light" ? "#A99666" : "#C62C76",
+          borderWidth: 3,
+          borderRadius: 1000,
+          borderSkipped: false,
+          type: "bar",
+          default_y_value: [-10, 110],
+        },
+      },
+      {
+        parse: { key: "Nível:" },
+        chart: {
+          hidden: false,
+          label: "Nível(%)",
+          borderColor: () => actualTheme == "light" ? "#3500A6" : "#B53C76",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₀₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₀₎(mm)",
+          borderColor: () => actualTheme == "light" ? "#3F8EBA" : "#3C96C9",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₋₁₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₋₁₎(mm)",
+          borderColor: () => actualTheme == "light" ? "#5B1E65" : "#3500A6",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Dist₍₋₂₎:" },
+        chart: {
+          hidden: true,
+          label: "Dist₍₋₂₎(mm)",
+          borderColor: () => actualTheme == "light" ? "#D3662F" : "#BA5A2B",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Δd/Δt₍₋₁₎:" },
+        chart: {
+          hidden: true,
+          label: "Δd/Δt₍₋₁₎(mm/h)",
+          borderColor: () => actualTheme == "light" ? "#235C23" : "#548354",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "Δd/Δt₍₋₂₎:" },
+        chart: {
+          hidden: true,
+          label: "Δd/Δt₍₋₂₎(mm/h)",
+          borderColor: () => actualTheme == "light" ? "#FF8A00" : "#B5752B",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "T0:" },
+        chart: {
+          hidden: true,
+          label: "T0(°C)",
+          borderColor: () => actualTheme == "light" ? "#B72B2B" : "#BD4545",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "T1:" },
+        chart: {
+          hidden: true,
+          label: "T1(°C)",
+          borderColor: () => actualTheme == "light" ? "#1E55BF" : "#476AAD",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "V0:" },
+        chart: {
+          hidden: true,
+          label: "V0(mV)",
+          borderColor: () => actualTheme == "light" ? "#530F0F" : "#C97474",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "V1:" },
+        chart: {
+          hidden: true,
+          label: "V1(mV)",
+          borderColor: () => actualTheme == "light" ? "#851DC5" : "#923EC6",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "SNR:" },
+        chart: {
+          hidden: true,
+          label: "SNR(dB)",
+          borderColor: () => actualTheme == "light" ? "#15A815" : "#0D660D",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "RSSI:" },
+        chart: {
+          hidden: true,
+          label: "RSSI(dB)",
+          borderColor: () => actualTheme == "light" ? "#8F5F3A" : "#CD9E79",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "SNR(gw):" },
+        chart: {
+          hidden: true,
+          label: "SNR(gw)(dB)",
+          borderColor: () => actualTheme == "light" ? "#37B0B0" : "#248282",
+          type: "line",
+        },
+      },
+      {
+        parse: { key: "RSSI(gw):" },
+        chart: {
+          hidden: true,
+          label: "RSSI(gw)(dB)",
+          borderColor: () => actualTheme == "light" ? "#C636C6" : "#A66CA6",
+          type: "line",
+        },
+      },
+    ];
+
+    function calculePercent(val) {
+      try {
+        const mm_htmlMillimeter = document.getElementById("mmMillimeter");
+        const mm_htmlOffset = document.getElementById("mmOffset");
+        const mm_htmlBottom = document.getElementById("mmBottom");
+        const mm_htmlPercent = document.getElementById("mmPercent");
+
+        let mm = Number(mm_htmlMillimeter.value);
+        let offset = Number(mm_htmlOffset.value);
+        let bottom = Number(mm_htmlBottom.value);
+        let percent = (1 - (mm - offset) / (bottom - offset)) * 100;
+        mm_htmlPercent.value = percent.toFixed(1);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    function calculeMillimeter(val) {
+      try {
+        const p_htmlMillimeter = document.getElementById("pMillimeter");
+        const p_htmlOffset = document.getElementById("pOffset");
+        const p_htmlBottom = document.getElementById("pBottom");
+        const p_htmlPercent = document.getElementById("pPercent");
+
+        let percent = Number(p_htmlPercent.value);
+        let offset = Number(p_htmlOffset.value);
+        let bottom = Number(p_htmlBottom.value);
+        let mm = (1 - percent / 100) * (bottom - offset) + offset;
+        p_htmlMillimeter.value = mm.toFixed(0);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    function dateIsoString(date) {
+      const offset = new Date().getTimezoneOffset() * 60 * 1000;
+      if (typeof date === "number") {
+        return new Date(date - offset).toISOString().split(".")[0];
+      } else {
+        return "";
+      }
+    }
+
+    class ChartControl {
+      #index_;
+      #chart_;
+      #miniChart_;
+      #range_;
+      #data_;
+      constructor(data, chartPanel, date) {
+        this.index_ = 0;
+        this.chart_ = chartPanel.chart;
+        this.miniChart_ = chartPanel.miniChart;
+        this.range_ = chartPanel.range;
+
+        this.range_.min = date.min;
+        this.range_.max = date.max;
+        this.range_.gap = 3 * 60 * 60 * 1000;
+        this.range_.step = 30 * 60 * 1000;
+        this.range_.left = date.min;
+        this.range_.right = date.max;
+
+        this.range_.onchange = (min, max) => {
+          this.zoom({ min, max });
         };
+
+        this.data_ = data;
+        this.dateUpdate(date);
+        this.update();
+      }
+      title() {
+        return this.chart_.options.plugins.title.text;
+      }
+      zoom(date) {
+        if (typeof date === "object") {
+          // let x = this.chart_.options.plugins.zoom.limits.x;
+          this.chart_.options.scales.x.min = date.min; // < x.min ? x.min : date.min;
+          this.chart_.options.scales.x.max = date.max; // > x.max ? x.max : date.max;
+          this.chart_.update();
+        }
+        this.chart_.resetZoom();
+      }
+      resetZoom() {
+        this.range_.left = this.range_.min;
+        this.range_.right = this.range_.max;
+        this.miniChart_.options.scales.x.min = this.range_.min; // < x.min ? x.min : date.min;
+        this.miniChart_.options.scales.x.max = this.range_.max; // > x.max ? x.max : date.max;
+        this.miniChart_.update();
+        this.miniChart_.resetZoom();
+        // let x = this.chart_.options.plugins.zoom.limits.x;
+        this.zoom({ min: this.range_.min, max: this.range_.max });
+      }
+      dateUpdate(date) {
+        this.range_.min = date.min;
+        this.range_.max = date.max;
+        // let x = this.chart_.options.plugins.zoom.limits.x;
+        // Object.assign(x, { min: date.min, max: date.max });
+        this.resetZoom();
+      }
+      setTheme(theme) {
+        this.chart_.update();
+      }
+      update() {
+        let length = this.length();
+        if (length) {
+          this.index_ += length;
+          this.index_ %= length;
+          this.chart_.data.datasets = this.data_[this.index_].datasets;
+          this.chart_.options.plugins.title.text = this.data_[this.index_].title;
+          this.chart_.update();
+          this.miniChart_.data.datasets = this.data_[this.index_].datasets;
+          this.miniChart_.update();
+        }
+      }
+      next() {
+        this.index_++;
+        this.update();
+      }
+      prev() {
+        this.index_--;
+        this.update();
+      }
+      position(position) {
+        this.index_ = position;
+        this.update();
+      }
+      length() {
+        return this.data_.length;
+      }
+    }
+
+    Chart.Tooltip.positioners.bottomPositioner = function (items) {
+      const pos = Chart.Tooltip.positioners.average(items);
+      if (pos === false) {
+        return false;
+      }
+      const chart = this.chart;
+      return {
+        x: pos.x,
+        y: chart.chartArea.bottom,
+        xAlign: "center",
+        yAlign: "bottom",
       };
+    };
 
-      const tooltipLabel = (tooltipItem) => {
-        let label = tooltipItem.dataset.label + ": ";
-        if (typeof tooltipItem.raw.text === "string") {
-          return label + tooltipItem.raw.text;
-        } else {
-          return label + tooltipItem.formattedValue;
-        }
-      };
-
-      function download_image(canvas, title) {
-        const ctx = canvas.getContext("2d");
-        ctx.save();
-        ctx.globalCompositeOperation = "destination-over";
-        ctx.fillStyle = "#e0e0e0";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
-        let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-        var link = document.createElement("a");
-        link.download = title + ".png";
-        link.href = image;
-        link.click();
+    const tooltipLabel = (tooltipItem) => {
+      let label = tooltipItem.dataset.label + ": ";
+      if (typeof tooltipItem.raw.text === "string") {
+        return label + tooltipItem.raw.text;
+      } else {
+        return label + tooltipItem.formattedValue;
       }
+    };
 
-      function createCanvas(navDisable, miniChart) {
-        const divChartPanel = document.getElementById("divChartPanel");
-        const div1 = document.createElement("div");
-        const canvas = document.createElement("canvas");
-        const divBtn = document.createElement("div");
-        const downloadBtn = document.createElement("input");
-        const prevBtn = document.createElement("input");
-        const nextBtn = document.createElement("input");
-        const resetBtn = document.createElement("input");
-        div1.className = "d-block w-100";
-        miniChart.className = "card mb-3";
-        miniChart.style = "height:80px;";
-        canvas.className = "card card-header mb-3";
-        divBtn.className = "row gap-2 justify-content-between m-0";
-        divBtn.role = "group";
+    function download_image(canvas, title) {
+      const ctx = canvas.getContext("2d");
+      ctx.save();
+      ctx.globalCompositeOperation = "destination-over";
+      ctx.fillStyle = "#e0e0e0";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      let image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      var link = document.createElement("a");
+      link.download = title + ".png";
+      link.href = image;
+      link.click();
+    }
 
-        if (navDisable) {
-          prevBtn.disabled = true;
-          prevBtn.className = "btn btn-outline-secondary col";
-        } else {
-          prevBtn.className = "btn btn-outline-primary col";
-        }
-        prevBtn.type = "button";
-        prevBtn.value = "Anterior";
-        prevBtn.addEventListener("click", () => {
-          chartControl.prev();
-        });
+    function createCanvas(navDisable, miniChart) {
+      const divChartPanel = document.getElementById("divChartPanel");
+      const div1 = document.createElement("div");
+      const canvas = document.createElement("canvas");
+      const divBtn = document.createElement("div");
+      const downloadBtn = document.createElement("input");
+      const prevBtn = document.createElement("input");
+      const nextBtn = document.createElement("input");
+      const resetBtn = document.createElement("input");
+      div1.className = "d-block w-100";
+      miniChart.className = "card mb-3";
+      miniChart.style = "height:80px;";
+      canvas.className = "card card-header mb-3";
+      divBtn.className = "row gap-2 justify-content-between m-0";
+      divBtn.role = "group";
 
-        if (navDisable) {
-          nextBtn.disabled = true;
-          nextBtn.className = "btn btn-outline-secondary col";
-        } else {
-          nextBtn.className = "btn btn-outline-primary col";
-        }
-        nextBtn.type = "button";
-        nextBtn.value = "Próximo";
-        nextBtn.addEventListener("click", () => {
-          chartControl.next();
-        });
-
-        resetBtn.className = "btn btn-primary col-md-auto";
-        resetBtn.type = "button";
-        resetBtn.value = "Zoom Padrão";
-        resetBtn.addEventListener("click", () => {
-          chartControl.resetZoom();
-        });
-
-        downloadBtn.className = "btn btn-primary col-md-auto";
-        downloadBtn.type = "button";
-        downloadBtn.value = "Download";
-        downloadBtn.addEventListener("click", () => {
-          download_image(canvas, chartControl.title());
-          chartControl.update();
-        });
-
-        divChartPanel.appendChild(div1);
-        div1.appendChild(canvas);
-        div1.appendChild(miniChart);
-        div1.appendChild(divBtn);
-        divBtn.appendChild(prevBtn);
-        divBtn.appendChild(resetBtn);
-        divBtn.appendChild(downloadBtn);
-        divBtn.appendChild(nextBtn);
-
-        return canvas;
+      if (navDisable) {
+        prevBtn.disabled = true;
+        prevBtn.className = "btn btn-outline-secondary col";
+      } else {
+        prevBtn.className = "btn btn-outline-primary col";
       }
+      prevBtn.type = "button";
+      prevBtn.value = "Anterior";
+      prevBtn.addEventListener("click", () => {
+        chartControl.prev();
+      });
 
-      function createDataset(sensor_data) {
-        let datasets = [];
-        sensor_data.forEach((bot_name) => {
-          sensor_data[bot_name].forEach((sensor, index) => {
-            try {
-              let data = [];
-              sensor_data[bot_name][sensor].forEach((value, index) => {
-                if (value.length) {
-                  let line = g_default_sensor[index].chart;
-                  data.push({
-                    ...line,
-                    data: value,
-                  });
-                }
-              });
-              const title = bot_name + " - " + sensor;
-              datasets.push({ datasets: data, title: title });
-            } catch (error) {}
-          });
-        });
-        return datasets;
+      if (navDisable) {
+        nextBtn.disabled = true;
+        nextBtn.className = "btn btn-outline-secondary col";
+      } else {
+        nextBtn.className = "btn btn-outline-primary col";
       }
+      nextBtn.type = "button";
+      nextBtn.value = "Próximo";
+      nextBtn.addEventListener("click", () => {
+        chartControl.next();
+      });
 
-      function createChart(canvas, options) {
-        let ctx = canvas.getContext("2d");
-        let chart = {};
-        try {
-          chart = new Chart(ctx, {
-            data: {
-              datasets: [],
-            },
-            options,
-          });
-        } catch (error) {}
-        return chart;
-      }
+      resetBtn.className = "btn btn-primary col-md-auto";
+      resetBtn.type = "button";
+      resetBtn.value = "Zoom Padrão";
+      resetBtn.addEventListener("click", () => {
+        chartControl.resetZoom();
+      });
 
-      function createChartPanel(navDisable) {
-        let range = new Range();
-        let canvas = createCanvas(navDisable, range.slider);
-        let miniChart = createChart(range.canvas, {
-          animation: false,
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              display: false,
-              suggestedMin: -10,
-              suggestedMax: 110,
-            },
-            x: {
-              display: false,
-              type: "time",
-            },
-          },
-          plugins: {
-            tooltip: {
-              enabled: false,
-            },
-            decimation: { algorithm: "min-max", enabled: true },
-            legend: {
-              display: false,
-            },
-            title: {
-              display: false,
-            },
-            zoom: {
-              limits: {
-                y: { min: "original", max: "original", minRange: 1 },
-                x: { min: "original", max: "original", minRange: 1800000 },
-              },
-            },
-          },
-        });
+      downloadBtn.className = "btn btn-primary col-md-auto";
+      downloadBtn.type = "button";
+      downloadBtn.value = "Download";
+      downloadBtn.addEventListener("click", () => {
+        download_image(canvas, chartControl.title());
+        chartControl.update();
+      });
 
-        let chart = createChart(canvas, {
-          animation: false,
-          responsive: true,
-          scales: {
-            y: {
-              reverse: false,
-              suggestedMin: -10,
-              suggestedMax: 110,
-              ticks: {
-                callback: (val) => {
-                  return val.toFixed();
-                },
-              },
-            },
-            x: {
-              type: "time",
-              time: {
-                displayFormats: {
-                  day: "d MMM",
-                  hour: "d MMM, HH:mm",
-                  minute: "d MMM, HH:mm",
-                },
-              },
-            },
-          },
-          interaction: {
-            intersect: false,
-            axis: "x",
-            mode: "nearest",
-          },
-          plugins: {
-            tooltip: {
-              position: "bottomPositioner",
-              backgroundColor: "rgba(127, 127, 127, 0.5)",
-              callbacks: {
-                label: tooltipLabel,
-              },
-            },
-            title: {
-              display: true,
-              text: "Gráfico",
-            },
-            zoom: {
-              limits: {
-                y: { min: "original", max: "original", minRange: 1 },
-                x: { min: "original", max: "original", minRange: 1800000 },
-              },
-              pan: {
-                enabled: true,
-                mode: "xy",
-                modifierKey: "ctrl",
-              },
-              zoom: {
-                drag: {
-                  enabled: true,
-                  backgroundColor: "rgba(192,192,192,0.3)",
-                },
-                wheel: {
-                  enabled: true,
-                  modifierKey: "shift",
-                },
-                pinch: {
-                  enabled: true,
-                },
-                mode: "xy",
-              },
-            },
-          },
-        });
-        return { chart, miniChart, range };
-      }
+      divChartPanel.appendChild(div1);
+      div1.appendChild(canvas);
+      div1.appendChild(miniChart);
+      div1.appendChild(divBtn);
+      divBtn.appendChild(prevBtn);
+      divBtn.appendChild(resetBtn);
+      divBtn.appendChild(downloadBtn);
+      divBtn.appendChild(nextBtn);
 
-      function createDatePanel(start_date, end_date) {
-        const divSelector = document.createElement("div");
-        const input_start = document.createElement("input");
-        const label_start = document.createElement("label");
-        const input_end = document.createElement("input");
-        const label_end = document.createElement("label");
-        const resetBtn = document.createElement("input");
+      return canvas;
+    }
 
-        divSelector.className = "vstack gap-2";
-
-        label_start.className = "form-label";
-        label_start.innerHTML = "Início:";
-        label_end.className = "form-label";
-        label_end.innerHTML = "Fim:";
-
-        input_start.className = "form-control";
-        input_start.type = "datetime-local";
-        input_start.value = dateIsoString(start_date);
-        input_start.addEventListener("change", () => {
-          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
-        });
-
-        input_end.className = "form-control";
-        input_end.type = "datetime-local";
-        input_end.value = dateIsoString(end_date);
-        input_end.addEventListener("change", () => {
-          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
-        });
-
-        resetBtn.className = "btn btn-outline-primary";
-        resetBtn.type = "button";
-        resetBtn.value = "Redefinir";
-        resetBtn.addEventListener("click", () => {
-          input_start.value = dateIsoString(start_date);
-          input_end.value = dateIsoString(end_date);
-          chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
-        });
-
-        label_start.appendChild(input_start);
-        label_end.appendChild(input_end);
-        divDatePanel.appendChild(divSelector);
-        divSelector.appendChild(label_start);
-        divSelector.appendChild(label_end);
-        divSelector.appendChild(resetBtn);
-      }
-
-      function resetElements() {
-        const divChartPanel = document.getElementById("divChartPanel");
-        while (divChartPanel.hasChildNodes()) {
-          divChartPanel.removeChild(divChartPanel.lastChild);
-        }
-        const divEventPanel = document.getElementById("divEventPanel");
-        while (divEventPanel.hasChildNodes()) {
-          divEventPanel.removeChild(divEventPanel.lastChild);
-        }
-        const divDatePanel = document.getElementById("divDatePanel");
-        while (divDatePanel.hasChildNodes()) {
-          divDatePanel.removeChild(divDatePanel.lastChild);
-        }
-        chartControl = null;
-      }
-
-      class Message {
-        constructor(message) {
-          if (message.type === "message") {
-            this.message = message;
-          } else {
-            throw "Message type error!";
-          }
-        }
-        text() {
-          let text = "";
-          this.message.text_entities.forEach((fragment) => {
-            text += fragment.text;
-          });
-          if (text.length) {
-            return text;
-          } else {
-            throw "Text is empty!";
-          }
-        }
-        author() {
-          if (typeof this.message.from === "string") {
-            if (typeof this.message.author === "string") {
-              return this.message.from + " - " + this.message.author;
-            } else {
-              return this.message.from;
-            }
-          } else {
-            throw "Author error!";
-          }
-        }
-        #number(string) {
-          let number = Number.parseFloat(string);
-          if (typeof number !== "number" || Number.isNaN(number)) {
-            throw "NaN";
-          }
-          return number;
-        }
-        #numberAt(string, position) {
-          return this.#number(string.substring(position));
-        }
-        date() {
-          return this.#number(this.message.date_unixtime) * 1000;
-        }
-        #sensorName(line) {
-          if (line.startsWith("Nome:")) {
-            return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
-          } else {
-            throw "Content is not a sensor!";
-          }
-        }
-        #sensorValue(line) {
+    function createDataset(sensor_data) {
+      let datasets = [];
+      sensor_data.forEach((bot_name) => {
+        sensor_data[bot_name].forEach((sensor, index) => {
           try {
-            return this.#numberAt(line, line.indexOf(":") + 1);
-          } catch (err) {
-            return this.#numberAt(line, line.lastIndexOf("(") + 1);
-          }
-        }
-        parseAsSensor(filter) {
-          let textLines = this.text().split("\n");
-          let author = this.author();
-          let sensor = this.#sensorName(textLines[0]);
-          textLines.shift();
-          let date = this.date();
-          let values = new Array(filter.length);
-          textLines.forEach((line) => {
-            filter.forEach((item, index) => {
-              try {
-                if (line.includes(item)) {
-                  values[index] = this.#sensorValue(line);
-                }
-              } catch (err) {}
-            });
-          });
-          return { author, sensor, date, values };
-        }
-        parseAsEvent() {
-          let lines = this.text().split("\n");
-          let first_line = lines[0];
-          let end_of_name = first_line.lastIndexOf(":");
-          if (end_of_name < 0) {
-            throw "Event does not have a sensor name!";
-          }
-          let author = this.author();
-          let date = this.date();
-          let sensor = first_line.substring(0, end_of_name);
-          let text = first_line.substring(end_of_name + 1).trim() + " " + lines[1].trim();
-          return { author, sensor, date, text };
-        }
-      }
-
-      function createEventPanel(event) {
-        const divEventPanel = document.getElementById("divEventPanel");
-
-        const hEvent = document.createElement("h3");
-        hEvent.innerText = "Eventos";
-        divEventPanel.appendChild(hEvent);
-
-        event.forEach((msg) => {
-          try {
-            const text = msg.text();
-            const author = msg.author();
-            const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
-
-            const divCard = document.createElement("div");
-            const divAuthor = document.createElement("div");
-            const divText = document.createElement("div");
-            const divDate = document.createElement("div");
-
-            divCard.className = "card card-header mb-3";
-
-            divAuthor.className = "text-primary fw-bold";
-            divAuthor.innerText = author;
-
-            divText.className = "card-text";
-            divText.innerText = text;
-
-            divDate.className = "text-secondary fst-italic text-end";
-            divDate.innerText = date;
-
-            divEventPanel.appendChild(divCard);
-            divCard.appendChild(divAuthor);
-            divCard.appendChild(divText);
-            divCard.appendChild(divDate);
-          } catch (err) {}
-        });
-      }
-
-      class SensorValues {
-        data;
-        date;
-        event;
-        constructor(imported) {
-          this.data = [];
-          this.date = { start: null, end: null };
-          this.event = [];
-          this.#import(imported);
-        }
-        #push(bot_name, sensor, index, date, value) {
-          if (!this.data.includes(bot_name)) {
-            this.data.push(bot_name);
-            this.data[bot_name] = [];
-          }
-          if (!this.data[bot_name].includes(sensor)) {
-            this.data[bot_name].push(sensor);
-            this.data[bot_name][sensor] = [];
-            g_default_sensor.forEach((item) => {
-              this.data[bot_name][sensor].push([]);
-            });
-          }
-          if (typeof value === "string") {
-            this.data[bot_name][sensor][index].push({
-              x: date,
-              y: g_default_sensor[index].chart.default_y_value,
-              text: value,
-            });
-          } else {
-            this.data[bot_name][sensor][index].push({ x: date, y: value });
-          }
-          if (typeof this.date.max !== "number" || date > this.date.max) {
-            this.date.max = date;
-          }
-          if (typeof this.date.min !== "number" || date < this.date.min) {
-            this.date.min = date;
-          }
-        }
-        #import(imported) {
-          const result = JSON.parse(imported);
-          let filter = [];
-          let index_of_event_dataset = g_default_sensor.findIndex((item) => item.parse.key == "Evento:");
-          g_default_sensor.forEach((item) => filter.push(item.parse.key));
-          result.messages.forEach((message) => {
-            try {
-              const msg = new Message(message);
-              try {
-                const result = msg.parseAsSensor(filter);
-                result.values.forEach((value, index) => {
-                  this.#push(result.author, result.sensor, index, result.date, value);
+            let data = [];
+            sensor_data[bot_name][sensor].forEach((value, index) => {
+              if (value.length) {
+                let line = g_default_sensor[index].chart;
+                data.push({
+                  ...line,
+                  data: value,
                 });
-              } catch (err) {
-                try {
-                  this.event.push(msg);
-                  if (index_of_event_dataset >= 0) {
-                    const result = msg.parseAsEvent();
-                    this.#push(result.author, result.sensor, index_of_event_dataset, result.date, result.text);
-                  }
-                } catch (err) {}
               }
-            } catch (err) {}
+            });
+            const title = bot_name + " - " + sensor;
+            datasets.push({ datasets: data, title: title });
+            } catch (error) {}
+        });
+      });
+      return datasets;
+    }
+
+    function createChart(canvas, options) {
+      let ctx = canvas.getContext("2d");
+      let chart = {};
+      try {
+        chart = new Chart(ctx, {
+          data: {
+            datasets: [],
+          },
+          options,
+        });
+        } catch (error) {}
+      return chart;
+    }
+
+    function createChartPanel(navDisable) {
+      let range = new Range();
+      let canvas = createCanvas(navDisable, range.slider);
+      let miniChart = createChart(range.canvas, {
+        animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            display: false,
+            suggestedMin: -10,
+            suggestedMax: 110,
+          },
+          x: {
+            display: false,
+            type: "time",
+          },
+        },
+        plugins: {
+          tooltip: {
+            enabled: false,
+          },
+          decimation: { algorithm: "min-max", enabled: true },
+          legend: {
+            display: false,
+          },
+          title: {
+            display: false,
+          },
+          zoom: {
+            limits: {
+              y: { min: "original", max: "original", minRange: 1 },
+              x: { min: "original", max: "original", minRange: 1800000 },
+            },
+          },
+        },
+      });
+
+      let chart = createChart(canvas, {
+        animation: false,
+        responsive: true,
+        scales: {
+          y: {
+            reverse: false,
+            suggestedMin: -10,
+            suggestedMax: 110,
+            ticks: {
+              callback: (val) => {
+                return val.toFixed();
+              },
+            },
+          },
+          x: {
+            type: "time",
+            time: {
+              displayFormats: {
+                day: "d MMM",
+                hour: "d MMM, HH:mm",
+                minute: "d MMM, HH:mm",
+              },
+            },
+          },
+        },
+        interaction: {
+          intersect: false,
+          axis: "x",
+          mode: "nearest",
+        },
+        plugins: {
+          tooltip: {
+            position: "bottomPositioner",
+            backgroundColor: "rgba(127, 127, 127, 0.5)",
+            callbacks: {
+              label: tooltipLabel,
+            },
+          },
+          title: {
+            display: true,
+            text: "Gráfico",
+          },
+          zoom: {
+            limits: {
+              y: { min: "original", max: "original", minRange: 1 },
+              x: { min: "original", max: "original", minRange: 1800000 },
+            },
+            pan: {
+              enabled: true,
+              mode: "xy",
+              modifierKey: "ctrl",
+            },
+            zoom: {
+              drag: {
+                enabled: true,
+                backgroundColor: "rgba(192,192,192,0.3)",
+              },
+              wheel: {
+                enabled: true,
+                modifierKey: "shift",
+              },
+              pinch: {
+                enabled: true,
+              },
+              mode: "xy",
+            },
+          },
+        },
+      });
+      return { chart, miniChart, range };
+    }
+
+    function createDatePanel(start_date, end_date) {
+      const divSelector = document.createElement("div");
+      const input_start = document.createElement("input");
+      const label_start = document.createElement("label");
+      const input_end = document.createElement("input");
+      const label_end = document.createElement("label");
+      const resetBtn = document.createElement("input");
+
+      divSelector.className = "vstack gap-2";
+
+      label_start.className = "form-label";
+      label_start.innerHTML = "Início:";
+      label_end.className = "form-label";
+      label_end.innerHTML = "Fim:";
+
+      input_start.className = "form-control";
+      input_start.type = "datetime-local";
+      input_start.value = dateIsoString(start_date);
+      input_start.addEventListener("change", () => {
+        chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
+      });
+
+      input_end.className = "form-control";
+      input_end.type = "datetime-local";
+      input_end.value = dateIsoString(end_date);
+      input_end.addEventListener("change", () => {
+        chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
+      });
+
+      resetBtn.className = "btn btn-outline-primary";
+      resetBtn.type = "button";
+      resetBtn.value = "Redefinir";
+      resetBtn.addEventListener("click", () => {
+        input_start.value = dateIsoString(start_date);
+        input_end.value = dateIsoString(end_date);
+        chartControl.dateUpdate({ min: Date.parse(input_start.value), max: Date.parse(input_end.value) });
+      });
+
+      label_start.appendChild(input_start);
+      label_end.appendChild(input_end);
+      divDatePanel.appendChild(divSelector);
+      divSelector.appendChild(label_start);
+      divSelector.appendChild(label_end);
+      divSelector.appendChild(resetBtn);
+    }
+
+    function resetElements() {
+      const divChartPanel = document.getElementById("divChartPanel");
+      while (divChartPanel.hasChildNodes()) {
+        divChartPanel.removeChild(divChartPanel.lastChild);
+      }
+      const divEventPanel = document.getElementById("divEventPanel");
+      while (divEventPanel.hasChildNodes()) {
+        divEventPanel.removeChild(divEventPanel.lastChild);
+      }
+      const divDatePanel = document.getElementById("divDatePanel");
+      while (divDatePanel.hasChildNodes()) {
+        divDatePanel.removeChild(divDatePanel.lastChild);
+      }
+      chartControl = null;
+    }
+
+    class Message {
+      constructor(message) {
+        if (message.type === "message") {
+          this.message = message;
+        } else {
+          throw "Message type error!";
+        }
+      }
+      text() {
+        let text = "";
+        this.message.text_entities.forEach((fragment) => {
+          text += fragment.text;
+        });
+        if (text.length) {
+          return text;
+        } else {
+          throw "Text is empty!";
+        }
+      }
+      author() {
+        if (typeof this.message.from === "string") {
+          if (typeof this.message.author === "string") {
+            return this.message.from + " - " + this.message.author;
+          } else {
+            return this.message.from;
+          }
+        } else {
+          throw "Author error!";
+        }
+      }
+      #number(string) {
+        let number = Number.parseFloat(string);
+        if (typeof number !== "number" || Number.isNaN(number)) {
+          throw "NaN";
+        }
+        return number;
+      }
+      #numberAt(string, position) {
+        return this.#number(string.substring(position));
+      }
+      date() {
+        return this.#number(this.message.date_unixtime) * 1000;
+      }
+      #sensorName(line) {
+        if (line.startsWith("Nome:")) {
+          return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+        } else {
+          throw "Content is not a sensor!";
+        }
+      }
+      #sensorValue(line) {
+        try {
+          return this.#numberAt(line, line.indexOf(":") + 1);
+        } catch (err) {
+          return this.#numberAt(line, line.lastIndexOf("(") + 1);
+        }
+      }
+      parseAsSensor(filter) {
+        let textLines = this.text().split("\n");
+        let author = this.author();
+        let sensor = this.#sensorName(textLines[0]);
+        textLines.shift();
+        let date = this.date();
+        let values = new Array(filter.length);
+        textLines.forEach((line) => {
+          filter.forEach((item, index) => {
+            try {
+              if (line.includes(item)) {
+                values[index] = this.#sensorValue(line);
+              }
+              } catch (err) {}
           });
+        });
+        return { author, sensor, date, values };
+      }
+      parseAsEvent() {
+        let lines = this.text().split("\n");
+        let first_line = lines[0];
+        let end_of_name = first_line.lastIndexOf(":");
+        if (end_of_name < 0) {
+          throw "Event does not have a sensor name!";
+        }
+        let author = this.author();
+        let date = this.date();
+        let sensor = first_line.substring(0, end_of_name);
+        let text = first_line.substring(end_of_name + 1).trim() + " " + lines[1].trim();
+        return { author, sensor, date, text };
+      }
+    }
+
+    function createEventPanel(event) {
+      const divEventPanel = document.getElementById("divEventPanel");
+
+      const hEvent = document.createElement("h3");
+      hEvent.innerText = "Eventos";
+      divEventPanel.appendChild(hEvent);
+
+      event.forEach((msg) => {
+        try {
+          const text = msg.text();
+          const author = msg.author();
+          const date = luxon.DateTime.fromMillis(msg.date()).toFormat("F");
+
+          const divCard = document.createElement("div");
+          const divAuthor = document.createElement("div");
+          const divText = document.createElement("div");
+          const divDate = document.createElement("div");
+
+          divCard.className = "card card-header mb-3";
+
+          divAuthor.className = "text-primary fw-bold";
+          divAuthor.innerText = author;
+
+          divText.className = "card-text";
+          divText.innerText = text;
+
+          divDate.className = "text-secondary fst-italic text-end";
+          divDate.innerText = date;
+
+          divEventPanel.appendChild(divCard);
+          divCard.appendChild(divAuthor);
+          divCard.appendChild(divText);
+          divCard.appendChild(divDate);
+          } catch (err) {}
+      });
+    }
+
+    class SensorValues {
+      data;
+      date;
+      event;
+      constructor(imported) {
+        this.data = [];
+        this.date = { start: null, end: null };
+        this.event = [];
+        this.#import(imported);
+      }
+      #push(bot_name, sensor, index, date, value) {
+        if (!this.data.includes(bot_name)) {
+          this.data.push(bot_name);
+          this.data[bot_name] = [];
+        }
+        if (!this.data[bot_name].includes(sensor)) {
+          this.data[bot_name].push(sensor);
+          this.data[bot_name][sensor] = [];
+          g_default_sensor.forEach((item) => {
+            this.data[bot_name][sensor].push([]);
+          });
+        }
+        if (typeof value === "string") {
+          this.data[bot_name][sensor][index].push({
+            x: date,
+            y: g_default_sensor[index].chart.default_y_value,
+            text: value,
+          });
+        } else {
+          this.data[bot_name][sensor][index].push({ x: date, y: value });
+        }
+        if (typeof this.date.max !== "number" || date > this.date.max) {
+          this.date.max = date;
+        }
+        if (typeof this.date.min !== "number" || date < this.date.min) {
+          this.date.min = date;
+        }
+      }
+      #import(imported) {
+        const result = JSON.parse(imported);
+        let filter = [];
+        let index_of_event_dataset = g_default_sensor.findIndex((item) => item.parse.key == "Evento:");
+        g_default_sensor.forEach((item) => filter.push(item.parse.key));
+        result.messages.forEach((message) => {
+          try {
+            const msg = new Message(message);
+            try {
+              const result = msg.parseAsSensor(filter);
+              result.values.forEach((value, index) => {
+                this.#push(result.author, result.sensor, index, result.date, value);
+              });
+            } catch (err) {
+              try {
+                this.event.push(msg);
+                if (index_of_event_dataset >= 0) {
+                  const result = msg.parseAsEvent();
+                  this.#push(result.author, result.sensor, index_of_event_dataset, result.date, result.text);
+                }
+                } catch (err) {}
+            }
+            } catch (err) {}
+        });
+      }
+    }
+
+    class Range {
+      #element_;
+      #left_;
+      #right_;
+      #min_;
+      #max_;
+      #step_;
+      #gap_;
+      #callback_;
+
+      constructor() {
+        this.left_ = 40;
+        this.right_ = 60;
+        this.min_ = 0;
+        this.max_ = 100;
+        this.step_ = 1;
+        this.gap_ = 5;
+
+        let root = document.createElement("div");
+        let slider = document.createElement("div");
+        let range = document.createElement("div");
+        let canvas = document.createElement("canvas");
+        let shadowLeft = document.createElement("div");
+        let shadowRight = document.createElement("div");
+        let left = document.createElement("input");
+        let right = document.createElement("input");
+
+        slider.className = "slider";
+        range.className = "range-input";
+
+        left.type = "range";
+        left.step = this.step_;
+        left.min = this.min_;
+        left.max = this.max_;
+        left.value = this.left_;
+        left.addEventListener("input", (e) => {
+          this.left_ = e.target.valueAsNumber;
+          this.#updateLeftMove();
+        });
+
+        right.type = "range";
+        right.step = this.step_;
+        right.min = this.min_;
+        right.max = this.max_;
+        right.value = this.right_;
+        right.addEventListener("input", (e) => {
+          this.right_ = e.target.valueAsNumber;
+          this.#updateRightMove();
+        });
+
+        shadowLeft.className = "range-selected";
+        shadowRight.className = "range-selected";
+        canvas.className = "range-input";
+
+        root.appendChild(slider);
+        slider.appendChild(canvas);
+        slider.appendChild(range);
+        range.appendChild(shadowLeft);
+        range.appendChild(shadowRight);
+        range.appendChild(left);
+        range.appendChild(right);
+
+        this.element_ = {
+          root,
+          slider,
+          range,
+          canvas,
+          left,
+          right,
+          shadowLeft,
+          shadowRight,
+        };
+
+        this.#updateSlider();
+      }
+
+      #updateSlider() {
+        let start_bar = ((this.left_ - this.min_) / (this.max_ - this.min_)) * 100;
+        let end_bar = ((this.right_ - this.min_) / (this.max_ - this.min_)) * 100;
+
+        this.element_.shadowLeft.style.right = 100 - start_bar + "%";
+        this.element_.shadowRight.style.left = end_bar + "%";
+
+        if (typeof this.#callback_ === "function") {
+          this.#callback_(this.left_, this.right_);
         }
       }
 
-      class Range {
-        #element_;
-        #left_;
-        #right_;
-        #min_;
-        #max_;
-        #step_;
-        #gap_;
-        #callback_;
-
-        constructor() {
-          this.left_ = 40;
-          this.right_ = 60;
-          this.min_ = 0;
-          this.max_ = 100;
-          this.step_ = 1;
-          this.gap_ = 5;
-
-          let root = document.createElement("div");
-          let slider = document.createElement("div");
-          let range = document.createElement("div");
-          let canvas = document.createElement("canvas");
-          let shadowLeft = document.createElement("div");
-          let shadowRight = document.createElement("div");
-          let left = document.createElement("input");
-          let right = document.createElement("input");
-
-          slider.className = "slider";
-          range.className = "range-input";
-
-          left.type = "range";
-          left.step = this.step_;
-          left.min = this.min_;
-          left.max = this.max_;
-          left.value = this.left_;
-          left.addEventListener("input", (e) => {
-            this.left_ = e.target.valueAsNumber;
-            this.#updateLeftMove();
-          });
-
-          right.type = "range";
-          right.step = this.step_;
-          right.min = this.min_;
-          right.max = this.max_;
-          right.value = this.right_;
-          right.addEventListener("input", (e) => {
-            this.right_ = e.target.valueAsNumber;
-            this.#updateRightMove();
-          });
-
-          shadowLeft.className = "range-selected";
-          shadowRight.className = "range-selected";
-          canvas.className = "range-input";
-
-          root.appendChild(slider);
-          slider.appendChild(canvas);
-          slider.appendChild(range);
-          range.appendChild(shadowLeft);
-          range.appendChild(shadowRight);
-          range.appendChild(left);
-          range.appendChild(right);
-
-          this.element_ = {
-            root,
-            slider,
-            range,
-            canvas,
-            left,
-            right,
-            shadowLeft,
-            shadowRight,
-          };
-
-          this.#updateSlider();
-        }
-
-        #updateSlider() {
-          let start_bar = ((this.left_ - this.min_) / (this.max_ - this.min_)) * 100;
-          let end_bar = ((this.right_ - this.min_) / (this.max_ - this.min_)) * 100;
-
-          this.element_.shadowLeft.style.right = 100 - start_bar + "%";
-          this.element_.shadowRight.style.left = end_bar + "%";
-
-          if (typeof this.#callback_ === "function") {
-            this.#callback_(this.left_, this.right_);
+      #updateLeftMove() {
+        if (this.right_ - this.left_ < this.gap_) {
+          if (this.right_ < this.max_) {
+            this.right_ = this.left_ + this.gap_;
           }
-        }
-
-        #updateLeftMove() {
-          if (this.right_ - this.left_ < this.gap_) {
-            if (this.right_ < this.max_) {
-              this.right_ = this.left_ + this.gap_;
-            }
-            if (this.right_ >= this.max_) {
-              this.right_ = this.max_;
-              this.left_ = this.right_ - this.gap_;
-              this.element_.left.value = this.left_;
-            }
-            this.element_.right.value = this.right_;
-          }
-          this.#updateSlider();
-        }
-
-        #updateRightMove() {
-          if (this.right_ - this.left_ < this.gap_) {
-            if (this.left_ > this.min_) {
-              this.left_ = this.right_ - this.gap_;
-            }
-            if (this.left_ <= this.min_) {
-              this.left_ = this.min_;
-              this.right_ = this.left_ + this.gap_;
-              this.element_.right.value = this.right_;
-            }
+          if (this.right_ >= this.max_) {
+            this.right_ = this.max_;
+            this.left_ = this.right_ - this.gap_;
             this.element_.left.value = this.left_;
           }
-          this.#updateSlider();
+          this.element_.right.value = this.right_;
         }
-
-        set onchange(callback) {
-          this.#callback_ = callback;
-        }
-
-        get slider() {
-          return this.element_.root;
-        }
-
-        get canvas() {
-          return this.element_.canvas;
-        }
-
-        get left() {
-          return this.left_;
-        }
-
-        get right() {
-          return this.right_;
-        }
-
-        get min() {
-          return this.min_;
-        }
-
-        get max() {
-          return this.max_;
-        }
-
-        get step() {
-          return this.step_;
-        }
-
-        get gap() {
-          return this.gap_;
-        }
-
-        set left(value) {
-          this.left_ = value;
-          this.element_.left.value = value;
-          this.#updateLeftMove();
-        }
-
-        set right(value) {
-          this.right_ = value;
-          this.element_.right.value = value;
-          this.#updateRightMove();
-        }
-
-        set min(value) {
-          this.min_ = value;
-          this.element_.left.min = value;
-          this.element_.right.min = value;
-          this.#updateLeftMove();
-          this.#updateRightMove();
-        }
-
-        set max(value) {
-          this.max_ = value;
-          this.element_.left.max = value;
-          this.element_.right.max = value;
-          this.#updateLeftMove();
-          this.#updateRightMove();
-        }
-
-        set step(value) {
-          this.step_ = value;
-          this.element_.left.step = value;
-          this.element_.right.step = value;
-          this.#updateLeftMove();
-          this.#updateRightMove();
-        }
-
-        set gap(value) {
-          this.gap_ = value;
-        }
+        this.#updateSlider();
       }
 
-      function processJson(imported) {
-        resetElements();
-        let sensor_values = new SensorValues(imported);
-        let datasets = createDataset(sensor_values.data);
-        let navDisable = datasets.length < 2;
-        let chartPanel = createChartPanel(navDisable);
-        let date = { min: sensor_values.date.min, max: sensor_values.date.max };
-        chartControl = new ChartControl(datasets, chartPanel, date);
-        createDatePanel(date.min, date.max);
-        createEventPanel(sensor_values.event);
-      }
-
-      function handleFiles(files) {
-        const reader = new FileReader();
-        reader.readAsText(files[0]);
-        reader.onload = () => {
-          try {
-            processJson(reader.result);
-          } catch (err) {
-            console.error(err);
+      #updateRightMove() {
+        if (this.right_ - this.left_ < this.gap_) {
+          if (this.left_ > this.min_) {
+            this.left_ = this.right_ - this.gap_;
           }
-        };
+          if (this.left_ <= this.min_) {
+            this.left_ = this.min_;
+            this.right_ = this.left_ + this.gap_;
+            this.element_.right.value = this.right_;
+          }
+          this.element_.left.value = this.left_;
+        }
+        this.#updateSlider();
       }
-    </script>
-    <div class="container-sm">
-      <header class="navbar navbar-expand-lg bd-navbar">
-        <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
-          <div class="d-lg-none" style="width: 1.5rem"></div>
 
-          <a class="navbar-brand p-0 me-0 me-lg-2" href="/" aria-label="Bootstrap">
-            <img src="sensor.log.png" width="200px" />
-          </a>
+      set onchange(callback) {
+        this.#callback_ = callback;
+      }
 
-          <hr class="d-lg-none text-white-50" />
+      get slider() {
+        return this.element_.root;
+      }
+
+      get canvas() {
+        return this.element_.canvas;
+      }
+
+      get left() {
+        return this.left_;
+      }
+
+      get right() {
+        return this.right_;
+      }
+
+      get min() {
+        return this.min_;
+      }
+
+      get max() {
+        return this.max_;
+      }
+
+      get step() {
+        return this.step_;
+      }
+
+      get gap() {
+        return this.gap_;
+      }
+
+      set left(value) {
+        this.left_ = value;
+        this.element_.left.value = value;
+        this.#updateLeftMove();
+      }
+
+      set right(value) {
+        this.right_ = value;
+        this.element_.right.value = value;
+        this.#updateRightMove();
+      }
+
+      set min(value) {
+        this.min_ = value;
+        this.element_.left.min = value;
+        this.element_.right.min = value;
+        this.#updateLeftMove();
+        this.#updateRightMove();
+      }
+
+      set max(value) {
+        this.max_ = value;
+        this.element_.left.max = value;
+        this.element_.right.max = value;
+        this.#updateLeftMove();
+        this.#updateRightMove();
+      }
+
+      set step(value) {
+        this.step_ = value;
+        this.element_.left.step = value;
+        this.element_.right.step = value;
+        this.#updateLeftMove();
+        this.#updateRightMove();
+      }
+
+      set gap(value) {
+        this.gap_ = value;
+      }
+    }
+
+    function processJson(imported) {
+      resetElements();
+      let sensor_values = new SensorValues(imported);
+      let datasets = createDataset(sensor_values.data);
+      let navDisable = datasets.length < 2;
+      let chartPanel = createChartPanel(navDisable);
+      let date = { min: sensor_values.date.min, max: sensor_values.date.max };
+      chartControl = new ChartControl(datasets, chartPanel, date);
+      createDatePanel(date.min, date.max);
+      createEventPanel(sensor_values.event);
+    }
+
+    function handleFiles(files) {
+      const reader = new FileReader();
+      reader.readAsText(files[0]);
+      reader.onload = () => {
+        try {
+          processJson(reader.result);
+        } catch (err) {
+          console.error(err);
+        }
+      };
+    }
+  </script>
+  <div class="container-sm">
+    <header class="navbar navbar-expand-lg bd-navbar">
+      <nav class="container-xxl bd-gutter flex-wrap flex-lg-nowrap" aria-label="Main navigation">
+        <div class="d-lg-none" style="width: 1.5rem"></div>
+
+        <a class="navbar-brand p-0 me-0 me-lg-2" href="/" aria-label="Bootstrap">
+          <img src="sensor.log.png" width="200px" />
+        </a>
+
+        <hr class="d-lg-none text-white-50" />
           <button
             class="navbar-toggler"
             type="button"
@@ -1174,24 +1191,24 @@
             aria-expanded="false"
             aria-label="Toggle navigation"
           >
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <hr class="d-lg-none text-white-50" />
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0" role="tablist">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#chartTab" data-bs-toggle="tab">Gŕaficos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#calc1Tab" data-bs-toggle="tab">mm ➛ %</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#calc2Tab" data-bs-toggle="tab">% ➛ mm</a>
-              </li>
-            </ul>
-          </div>
-          <!-- </div> -->
-          <div class="dropdown end-0 mb-3 me-3 bd-mode-toggle">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <hr class="d-lg-none text-white-50" />
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#chartTab" data-bs-toggle="tab">Gŕaficos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#calc1Tab" data-bs-toggle="tab">mm ➛ %</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#calc2Tab" data-bs-toggle="tab">% ➛ mm</a>
+            </li>
+          </ul>
+        </div>
+        <!-- </div> -->
+        <div class="dropdown end-0 mb-3 me-3 bd-mode-toggle">
             <button
               class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
               id="bd-theme"
@@ -1201,10 +1218,10 @@
               aria-label="Toggle theme (auto)"
             >
               <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-              <span class="visually-hidden" id="bd-theme-text">Tema</span>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text" style="">
-              <li>
+            <span class="visually-hidden" id="bd-theme-text">Tema</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text" style="">
+            <li>
                 <button
                   type="button"
                   class="dropdown-item d-flex align-items-center"
@@ -1212,98 +1229,98 @@
                   aria-pressed="false"
                 >
                   <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-                  Claro
+                Claro
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-                </button>
-              </li>
-              <li>
+              </button>
+            </li>
+            <li>
                 <button
                   type="button"
                   class="dropdown-item d-flex align-items-center"
                   data-bs-theme-value="dark"
                   aria-pressed="false"
                 >
-                  <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
-                    <use href="#moon-stars-fill"></use>
-                  </svg>
-                  Escuro
+                <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
+                  <use href="#moon-stars-fill"></use>
+                </svg>
+                Escuro
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-                </button>
-              </li>
-              <li>
+              </button>
+            </li>
+            <li>
                 <button
                   type="button"
                   class="dropdown-item d-flex align-items-center active"
                   data-bs-theme-value="auto"
                   aria-pressed="true"
                 >
-                  <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
-                    <use href="#circle-half"></use>
-                  </svg>
-                  Auto
+                <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em">
+                  <use href="#circle-half"></use>
+                </svg>
+                Auto
                   <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-                </button>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
-      <!-- Tab panes -->
-      <div class="tab-content">
-        <div id="chartTab" class="container tab-pane fade show active">
-          <div class="mb-3">
-            <div class="vstack gap-2">
-              <label class="form-label">
-                Carregue um arquivo:
-                <input type="file" class="form-control" accept=".json" onchange="handleFiles(this.files)" />
-              </label>
-              <div id="divDatePanel"></div>
-            </div>
-          </div>
-          <div id="divChartPanel" class="mb-3"></div>
-          <div id="divEventPanel" class="mb-3"></div>
+              </button>
+            </li>
+          </ul>
         </div>
-        <div id="calc1Tab" class="container tab-pane fade">
+      </nav>
+    </header>
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="chartTab" class="container tab-pane fade show active">
+        <div class="mb-3">
           <div class="vstack gap-2">
             <label class="form-label">
-              Distância (mm)
-              <input id="mmMillimeter" class="form-control" type="number" value="350" onchange="calculePercent()" />
+              Carregue um arquivo:
+              <input type="file" class="form-control" accept=".json" onchange="handleFiles(this.files)" />
             </label>
-            <label class="form-label">
-              Offset (mm)
-              <input id="mmOffset" class="form-control" type="number" value="300" onchange="calculePercent()" />
-            </label>
-            <label class="form-label">
-              Bottom (mm)
-              <input id="mmBottom" class="form-control" type="number" value="1300" onchange="calculePercent()" />
-            </label>
-            <label class="form-label">
-              Valor (%)
-              <input id="mmPercent" class="form-control" value="95" readonly />
-            </label>
+            <div id="divDatePanel"></div>
           </div>
         </div>
-        <div id="calc2Tab" class="container tab-pane fade">
-          <div class="vstack gap-2">
-            <label class="form-label">
-              Valor (%)
-              <input id="pPercent" class="form-control" type="number" value="95" onchange="calculeMillimeter()" />
-            </label>
+        <div id="divChartPanel" class="mb-3"></div>
+        <div id="divEventPanel" class="mb-3"></div>
+      </div>
+      <div id="calc1Tab" class="container tab-pane fade">
+        <div class="vstack gap-2">
+          <label class="form-label">
+            Distância (mm)
+            <input id="mmMillimeter" class="form-control" type="number" value="350" onchange="calculePercent()" />
+          </label>
+          <label class="form-label">
+            Offset (mm)
+            <input id="mmOffset" class="form-control" type="number" value="300" onchange="calculePercent()" />
+          </label>
+          <label class="form-label">
+            Bottom (mm)
+            <input id="mmBottom" class="form-control" type="number" value="1300" onchange="calculePercent()" />
+          </label>
+          <label class="form-label">
+            Valor (%)
+            <input id="mmPercent" class="form-control" value="95" readonly />
+          </label>
+        </div>
+      </div>
+      <div id="calc2Tab" class="container tab-pane fade">
+        <div class="vstack gap-2">
+          <label class="form-label">
+            Valor (%)
+            <input id="pPercent" class="form-control" type="number" value="95" onchange="calculeMillimeter()" />
+          </label>
             <label class="form-label"
               >Offset (mm)
-              <input id="pOffset" class="form-control" type="number" value="300" onchange="calculeMillimeter()" />
-            </label>
+            <input id="pOffset" class="form-control" type="number" value="300" onchange="calculeMillimeter()" />
+          </label>
             <label class="form-label"
               >Bottom (mm)
-              <input id="pBottom" class="form-control" type="number" value="1300" onchange="calculeMillimeter()" />
-            </label>
+            <input id="pBottom" class="form-control" type="number" value="1300" onchange="calculeMillimeter()" />
+          </label>
             <label class="form-label"
               >Distância (mm)
-              <input id="pMillimeter" class="form-control" value="350" readonly />
-            </label>
-          </div>
+            <input id="pMillimeter" class="form-control" value="350" readonly />
+          </label>
         </div>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 </html>
