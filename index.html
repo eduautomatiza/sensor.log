@@ -164,6 +164,7 @@
 
       const g_default_sensor = [
         {
+          id: "event",
           parse: { key: "Evento:" },
           chart: {
             hidden: false,
@@ -177,6 +178,7 @@
           },
         },
         {
+          id: "level",
           parse: { key: "Nível:" },
           chart: {
             hidden: false,
@@ -186,24 +188,29 @@
           },
         },
         {
+          id: "dist0",
           parse: { key: "Dist₍₀₎:" },
           chart: {
             hidden: true,
             label: "Dist₍₀₎(mm)",
             borderColor: "#0378",
             type: "line",
+            fill: "+1",
           },
         },
         {
+          id: "dist1",
           parse: { key: "Dist₍₋₁₎:" },
           chart: {
             hidden: true,
             label: "Dist₍₋₁₎(mm)",
             borderColor: "#7CF8",
             type: "line",
+            fill: "+1",
           },
         },
         {
+          id: "dist2",
           parse: { key: "Dist₍₋₂₎:" },
           chart: {
             hidden: true,
@@ -213,15 +220,18 @@
           },
         },
         {
+          id: "delta1",
           parse: { key: "Δd/Δt₍₋₁₎:" },
           chart: {
             hidden: true,
             label: "Δd/Δt₍₋₁₎(mm/h)",
             borderColor: "#C738",
             type: "line",
+            fill: "+1",
           },
         },
         {
+          id: "delta2",
           parse: { key: "Δd/Δt₍₋₂₎:" },
           chart: {
             hidden: true,
@@ -231,15 +241,18 @@
           },
         },
         {
+          id: "t0",
           parse: { key: "T0:" },
           chart: {
             hidden: true,
             label: "T0(°C)",
             borderColor: "#37F8",
             type: "line",
+            fill: "+1",
           },
         },
         {
+          id: "t1",
           parse: { key: "T1:" },
           chart: {
             hidden: true,
@@ -249,15 +262,18 @@
           },
         },
         {
+          id: "v0",
           parse: { key: "V0:" },
           chart: {
             hidden: true,
             label: "V0(mV)",
             borderColor: "#c008",
             type: "line",
+            fill: "+1",
           },
         },
         {
+          id: "v1",
           parse: { key: "V1:" },
           chart: {
             hidden: true,
@@ -267,6 +283,7 @@
           },
         },
         {
+          id: "snr",
           parse: { key: "SNR:" },
           chart: {
             hidden: true,
@@ -276,6 +293,7 @@
           },
         },
         {
+          id: "rssi",
           parse: { key: "RSSI:" },
           chart: {
             hidden: true,
@@ -285,6 +303,7 @@
           },
         },
         {
+          id: "snrgw",
           parse: { key: "SNR(gw):" },
           chart: {
             hidden: true,
@@ -294,12 +313,43 @@
           },
         },
         {
+          id: "rssigw",
           parse: { key: "RSSI(gw):" },
           chart: {
             hidden: true,
             label: "RSSI(gw)(dB)",
             borderColor: "#c0c8",
             type: "line",
+          },
+        },
+        {
+          id: "below",
+          chart: {
+            hidden: true,
+            label: "Previsão otimista",
+            borderColor: "#8c88",
+            type: "line",
+            fill: "+1",
+          },
+        },
+        {
+          id: "center",
+          chart: {
+            hidden: true,
+            label: "Previsão média",
+            borderColor: "#88c8",
+            type: "line",
+            fill: "+1",
+          },
+        },
+        {
+          id: "above",
+          chart: {
+            hidden: true,
+            label: "Previsão pessimista",
+            borderColor: "#c888",
+            type: "line",
+            fill: "-2",
           },
         },
       ];
@@ -352,6 +402,7 @@
         #miniChart_;
         #range_;
         #data_;
+        #preview_;
         constructor(data, chartPanel, date) {
           this.index_ = 0;
           this.chart_ = chartPanel.chart;
@@ -370,8 +421,25 @@
           };
 
           this.data_ = data;
+
+          this.preview_ = new Preview(data);
+
+          data.forEach((dataset) => {
+            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("below")].chart, data: {} });
+            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("center")].chart, data: {} });
+            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("above")].chart, data: {} });
+          });
+
           this.dateUpdate(date);
           this.update();
+        }
+        preview({ x, y }) {
+          let prev = this.preview_.points(this.index_, { x, y });
+          let dataset = this.data_[this.index_].datasets;
+          dataset[15].data = prev.below;
+          dataset[16].data = prev.center;
+          dataset[17].data = prev.above;
+          // this.chart_.update();
         }
         title() {
           return this.chart_.options.plugins.title.text;
@@ -446,6 +514,7 @@
       };
 
       const tooltipLabel = (tooltipItem) => {
+        chartControl.preview(tooltipItem.raw);
         let label = tooltipItem.dataset.label + ": ";
         if (typeof tooltipItem.raw.text === "string") {
           return label + tooltipItem.raw.text;
@@ -639,6 +708,13 @@
             intersect: false,
             axis: "x",
             mode: "nearest",
+          },
+          onClick: (e) => {
+            const canvasPosition = Chart.helpers.getRelativePosition(e, chart);
+
+            // Substitute the appropriate scale IDs
+            const dataX = chart.scales.x.getValueForPixel(canvasPosition.x);
+            const dataY = chart.scales.y.getValueForPixel(canvasPosition.y);
           },
           plugins: {
             tooltip: {
@@ -913,7 +989,9 @@
           const result = JSON.parse(imported);
           let filter = [];
           let index_of_event_dataset = g_default_sensor.findIndex((item) => item.parse.key == "Evento:");
-          g_default_sensor.forEach((item) => filter.push(item.parse.key));
+          g_default_sensor.forEach((item) => {
+            if (item.parse) filter.push(item.parse.key);
+          });
           result.messages.forEach((message) => {
             try {
               const msg = new Message(message);
@@ -1129,6 +1207,114 @@
         set gap(value) {
           this.gap_ = value;
         }
+      }
+
+      class Preview {
+        #preview_;
+        n_points_day;
+        milliseconds_of_day;
+        divisor_seconds;
+        constant_mm_h;
+
+        constructor(datasets) {
+          this.preview_ = [];
+
+          this.n_points_day = 72;
+          this.milliseconds_of_day = 24 * 60 * 60 * 1000;
+          this.divisor_seconds = this.milliseconds_of_day / this.n_points_day;
+          this.constant_mm_h = 24 / this.n_points_day;
+
+          datasets.forEach((dataset) => {
+            this.#preview(dataset);
+          });
+        }
+
+        #preview(dataset) {
+          let data = dataset.datasets[getDatasetIndex("delta2")].data;
+          let slices = [];
+          let preview_one_day = [];
+
+          // create array of data with n_points_day positions
+          for (let i = 0; i < this.n_points_day; i++) slices.push({ values: [] });
+
+          // fragment data per n_points_day
+          data.forEach((item) => {
+            if (item.y > -1) {
+              const position = Number.parseInt((item.x / this.divisor_seconds) % this.n_points_day);
+              slices[position].values.push(item.y);
+            }
+          });
+
+          //  preview calcule to one day
+          slices.forEach((slice) => {
+            let acc_below = 0;
+            let acc_above = 0;
+            let count_below = 0;
+            let count_above = 0;
+            let center = slice.values.reduce((a, b) => a + b, 0) / slice.values.length;
+
+            slice.values.forEach((value) => {
+              if (value <= center) {
+                acc_below += value;
+                count_below++;
+              }
+              if (value >= center) {
+                acc_above += value;
+                count_above++;
+              }
+            });
+            let below = acc_below / count_below;
+            let above = acc_above / count_above;
+
+            below *= this.constant_mm_h;
+            center *= this.constant_mm_h;
+            above *= this.constant_mm_h;
+
+            preview_one_day.push({ below, center, above });
+          });
+          this.preview_.push(preview_one_day);
+        }
+
+        points(index, { x, y }) {
+          let preview_one_day = this.preview_[index];
+          let preview_x_days = { below: [], center: [], above: [] };
+          let date = x;
+          let y_value = y;
+
+          //  preview calcule to n days
+          const initial_time = parseInt(date);
+          const initial_index = Number.parseInt((initial_time / this.divisor_seconds) % this.n_points_day);
+          const n_preview_day = 3 + (initial_index > 0 ? 1 : 0);
+          const constant_next_time = this.milliseconds_of_day / this.n_points_day;
+          let time = initial_time;
+
+          let acc_below = y_value;
+          let acc_center = y_value;
+          let acc_above = y_value;
+          preview_x_days.center.push({ x: time, y: Number.parseFloat(acc_center) });
+          preview_x_days.below.push({ x: time, y: Number.parseFloat(acc_below) });
+          preview_x_days.above.push({ x: time, y: Number.parseFloat(acc_above) });
+
+          for (let i = 0, j = initial_index; i < n_preview_day; i++, j = 0) {
+            for (; j < this.n_points_day; j++) {
+              time += constant_next_time;
+              acc_below += preview_one_day[j].below;
+              acc_center += preview_one_day[j].center;
+              acc_above += preview_one_day[j].above;
+              preview_x_days.center.push({ x: time, y: Number.parseFloat(acc_center) });
+              preview_x_days.below.push({ x: time, y: Number.parseFloat(acc_below) });
+              preview_x_days.above.push({ x: time, y: Number.parseFloat(acc_above) });
+            }
+          }
+          return preview_x_days;
+        }
+      }
+
+      function getDatasetIndex(id) {
+        return g_default_sensor.findIndex((item) => {
+          if (item.id) return item.id == id;
+          else return false;
+        });
       }
 
       function processJson(imported) {
