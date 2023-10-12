@@ -436,12 +436,14 @@
           this.update();
         }
         preview({ x, y }) {
-          let prev = this.preview_.points(this.index_, { x, y });
-          let dataset = this.data_[this.index_].datasets;
-          dataset[15].data = prev.below;
-          dataset[16].data = prev.center;
-          dataset[17].data = prev.above;
-          // this.chart_.update();
+          try {
+            let prev = this.preview_.points(this.index_, { x, y });
+            let dataset = this.data_[this.index_].datasets;
+            dataset[getDatasetIndex("below")].data = prev.below;
+            dataset[getDatasetIndex("center")].data = prev.center;
+            dataset[getDatasetIndex("above")].data = prev.above;
+          } catch (err) {}
+        // this.chart_.update();
         }
         title() {
           return this.chart_.options.plugins.title.text;
