@@ -188,6 +188,16 @@
           },
         },
         {
+          id: "rawlevel",
+          parse: { key: "Nível*:" },
+          chart: {
+            hidden: false,
+            label: "Nível*(%)",
+            borderColor: "#73C8",
+            type: "line",
+          },
+        },
+        {
           id: "dist0",
           parse: { key: "Dist₍₀₎:" },
           chart: {
@@ -195,7 +205,6 @@
             label: "Dist₍₀₎(mm)",
             borderColor: "#0378",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -206,7 +215,6 @@
             label: "Dist₍₋₁₎(mm)",
             borderColor: "#7CF8",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -227,7 +235,6 @@
             label: "Δd/Δt₍₋₁₎(mm/h)",
             borderColor: "#C738",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -248,7 +255,6 @@
             label: "T0(°C)",
             borderColor: "#37F8",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -269,7 +275,6 @@
             label: "V0(mV)",
             borderColor: "#c008",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -329,7 +334,6 @@
             label: "Previsão otimista",
             borderColor: "#8c88",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -339,7 +343,6 @@
             label: "Previsão média",
             borderColor: "#88c8",
             type: "line",
-            fill: "+1",
           },
         },
         {
@@ -349,7 +352,6 @@
             label: "Previsão pessimista",
             borderColor: "#c888",
             type: "line",
-            fill: "-2",
           },
         },
       ];
@@ -1230,49 +1232,62 @@
         }
 
         #preview(dataset) {
-          let data = dataset.datasets[getDatasetIndex("delta2")].data;
-          let slices = [];
-          let preview_one_day = [];
+          try {
+            let data = dataset.datasets[getDatasetIndex("delta2")].data;
+            const slices = [];
+            const normal_dist = [];
+            const preview_one_day = [];
 
-          // create array of data with n_points_day positions
-          for (let i = 0; i < this.n_points_day; i++) slices.push({ values: [] });
-
-          // fragment data per n_points_day
-          data.forEach((item) => {
-            if (item.y > -1) {
-              const position = Number.parseInt((item.x / this.divisor_seconds) % this.n_points_day);
-              slices[position].values.push(item.y);
+            // create array of data with n_points_day positions
+            for (let i = 0; i < this.n_points_day; i++) {
+              slices.push({ values: [] });
+              normal_dist.push({});
             }
-          });
 
-          //  preview calcule to one day
-          slices.forEach((slice) => {
-            let acc_below = 0;
-            let acc_above = 0;
-            let count_below = 0;
-            let count_above = 0;
-            let center = slice.values.reduce((a, b) => a + b, 0) / slice.values.length;
+            // fragment data per n_points_day
+            data.forEach((item) => {
+              if (item.y >= 0) {
+                const position = Number.parseInt((item.x / this.divisor_seconds) % this.n_points_day);
+                slices[position].values.push(item.y);
 
-            slice.values.forEach((value) => {
-              if (value <= center) {
-                acc_below += value;
-                count_below++;
-              }
-              if (value >= center) {
-                acc_above += value;
-                count_above++;
+                const key = Number.parseInt(item.y / 10);
+                if (typeof normal_dist[position][key] === "number") {
+                  normal_dist[position][key]++;
+                } else {
+                  normal_dist[position][key] = 1;
+                }
               }
             });
-            let below = acc_below / count_below;
-            let above = acc_above / count_above;
 
-            below *= this.constant_mm_h;
-            center *= this.constant_mm_h;
-            above *= this.constant_mm_h;
+            //  preview calcule to one day
+            slices.forEach((slice) => {
+              let acc_below = 0;
+              let acc_above = 0;
+              let count_below = 0;
+              let count_above = 0;
+              let center = slice.values.reduce((a, b) => a + b, 0) / slice.values.length;
 
-            preview_one_day.push({ below, center, above });
-          });
-          this.preview_.push(preview_one_day);
+              slice.values.forEach((value) => {
+                if (value <= center) {
+                  acc_below += value;
+                  count_below++;
+                }
+                if (value >= center) {
+                  acc_above += value;
+                  count_above++;
+                }
+              });
+              let below = acc_below / count_below;
+              let above = acc_above / count_above;
+
+              below *= this.constant_mm_h;
+              center *= this.constant_mm_h;
+              above *= this.constant_mm_h;
+
+              preview_one_day.push({ below, center, above });
+            });
+            this.preview_.push(preview_one_day);
+          } catch (err) {}
         }
 
         points(index, { x, y }) {
