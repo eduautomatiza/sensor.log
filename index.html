@@ -327,6 +327,7 @@
             type: "line",
           },
         },
+        /*
         {
           id: "below",
           chart: {
@@ -354,6 +355,7 @@
             type: "line",
           },
         },
+*/
       ];
 
       function calculePercent(val) {
@@ -427,9 +429,11 @@
           this.preview_ = new Preview(data);
 
           data.forEach((dataset) => {
-            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("below")].chart, data: {} });
-            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("center")].chart, data: {} });
-            dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("above")].chart, data: {} });
+            try {
+              dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("below")].chart, data: {} });
+              dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("center")].chart, data: {} });
+              dataset.datasets.push({ ...g_default_sensor[getDatasetIndex("above")].chart, data: {} });
+            } catch (err) {}
           });
 
           this.dateUpdate(date);
@@ -443,7 +447,7 @@
             dataset[getDatasetIndex("center")].data = prev.center;
             dataset[getDatasetIndex("above")].data = prev.above;
           } catch (err) {}
-        // this.chart_.update();
+          // this.chart_.update();
         }
         title() {
           return this.chart_.options.plugins.title.text;
