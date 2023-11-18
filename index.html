@@ -542,7 +542,7 @@
                   });
                 }
               });
-              const title = bot_name + " - " + sensor;
+              const title = bot_name + sensor;
               datasets.push({ datasets: data, title: title });
             } catch (error) {}
           });
@@ -758,7 +758,7 @@
         author() {
           if (typeof this.message.from === "string") {
             if (typeof this.message.author === "string") {
-              return this.message.from + " - " + this.message.author;
+              return this.message.from + " / " + this.message.author;
             } else {
               return this.message.from;
             }
@@ -781,7 +781,7 @@
         }
         #sensorName(line) {
           if (line.startsWith("Nome:")) {
-            return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+            return " / " + line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
           } else {
             throw "Content is not a sensor!";
           }
