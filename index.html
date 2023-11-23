@@ -529,23 +529,20 @@
 
       function createDataset(sensor_data) {
         let datasets = [];
-        sensor_data.forEach((bot_name) => {
-          sensor_data[bot_name].forEach((sensor, index) => {
-            try {
-              let data = [];
-              sensor_data[bot_name][sensor].forEach((value, index) => {
-                if (value.length) {
-                  let line = g_default_sensor[index].chart;
-                  data.push({
-                    ...line,
-                    data: value,
-                  });
-                }
-              });
-              const title = bot_name + sensor;
-              datasets.push({ datasets: data, title: title });
-            } catch (error) {}
-          });
+        sensor_data.forEach((key) => {
+          try {
+            let data = [];
+            sensor_data[key].forEach((value, index) => {
+              if (value.length) {
+                let line = g_default_sensor[index].chart;
+                data.push({
+                  ...line,
+                  data: value,
+                });
+              }
+            });
+            datasets.push({ datasets: data, title: key });
+          } catch (error) {}
         });
         return datasets;
       }
@@ -758,7 +755,7 @@
         author() {
           if (typeof this.message.from === "string") {
             if (typeof this.message.author === "string") {
-              return this.message.from + " / " + this.message.author;
+              return this.message.from + " - " + this.message.author;
             } else {
               return this.message.from;
             }
@@ -781,7 +778,7 @@
         }
         #sensorName(line) {
           if (line.startsWith("Nome:")) {
-            return " / " + line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
+            return line.substring(line.indexOf('"') + 1, line.lastIndexOf('"'));
           } else {
             throw "Content is not a sensor!";
           }
@@ -874,25 +871,26 @@
           this.#import(imported);
         }
         #push(bot_name, sensor, index, date, value) {
-          if (!this.data.includes(bot_name)) {
-            this.data.push(bot_name);
-            this.data[bot_name] = [];
-          }
-          if (!this.data[bot_name].includes(sensor)) {
-            this.data[bot_name].push(sensor);
-            this.data[bot_name][sensor] = [];
-            g_default_sensor.forEach((item) => {
-              this.data[bot_name][sensor].push([]);
+          const key = bot_name + " - " + sensor;
+          if (!this.data.includes(key)) {
+            this.data.push(key);
+            let dataArray = Array();
+            this.data[key] = dataArray;
+            g_default_sensor.forEach(() => {
+              dataArray.push(Array());
             });
           }
-          if (typeof value === "string") {
-            this.data[bot_name][sensor][index].push({
+          const data = this.data[key][index];
+          if (typeof value === "number") {
+            data.push({ x: date, y: value });
+          } else if (typeof value === "string") {
+            data.push({
               x: date,
               y: g_default_sensor[index].chart.default_y_value,
               text: value,
             });
           } else {
-            this.data[bot_name][sensor][index].push({ x: date, y: value });
+            return;
           }
           if (typeof this.date.max !== "number" || date > this.date.max) {
             this.date.max = date;
